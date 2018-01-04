@@ -1,0 +1,72 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+// keystore.properties file, in the rootProject folder (should be ommited from version control).
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+
+// Initialize a new Properties() object called keystoreProperties.
+def keystoreProperties = new Properties()
+
+// Load your keystore.properties file into the keystoreProperties object.
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+android {
+    signingConfigs {
+        Live {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
+    flavorDimensions "versionCode"
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 26
+        resValue "string", "version_name", "1.2.0"
+        resValue "string", "download_link", "http://goo.gl/KjtDj4"
+    }
+    productFlavors {
+        dev {
+            applicationId "com.balicodes.quicksms.dev"
+            versionCode 5
+            versionName "1.2.0"
+            resValue "string", "app_name", "Quick SMS Dev"
+        }
+        free {
+            applicationId "com.balicodes.quicksms"
+            versionCode 5
+            versionName "1.2.0"
+            resValue "string", "app_name", "Quick SMS"
+            signingConfig signingConfigs.Live
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    android.applicationVariants.all { variant ->
+        variant.mergeResources.doLast {
+        }
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:26.0.2'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+}
+repositories {
+    mavenCentral()
+}

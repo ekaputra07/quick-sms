@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <CheckBoxPreference
+            android:key="@string/pref_enable_beep_key"
+            android:title="@string/pref_enable_beep_title"
+            android:summary="@string/pref_enable_beep_summary"
+            android:defaultValue="true">
+        </CheckBoxPreference>
+
+        <CheckBoxPreference
+            android:key="@string/pref_sending_confirmation_key"
+            android:title="@string/pref_sending_confirmation_title"
+            android:summary="@string/pref_sending_confirmation_summary"
+            android:defaultValue="false">
+        </CheckBoxPreference>
+
+        <CheckBoxPreference
+            android:key="@string/pref_enable_delivery_report_key"
+            android:title="@string/pref_enable_delivery_report_title"
+            android:summary="@string/pref_enable_delivery_report_summary"
+            android:defaultValue="false">
+        </CheckBoxPreference>
+
+        <ListPreference
+            android:key="@string/pref_sort_by_key"
+            android:title="@string/pref_sort_by_title"
+            android:dialogTitle="Sort order"
+            android:entries="@array/pref_sort_order_names_array"
+            android:entryValues="@array/pref_sort_order_values_array"
+            android:summary="@string/pref_sort_by_summary"
+            android:defaultValue="@string/pref_sort_by_default_value" />
+
+</PreferenceScreen>
