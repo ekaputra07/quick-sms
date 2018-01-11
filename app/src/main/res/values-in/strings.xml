@@ -5,7 +5,7 @@
     <string name="action_delete">Hapus</string>
     <string name="action_edit">Edit</string>
     <string name="action_new">Baru</string>
-    <string name="action_rate">Rate Quick SMS</string>
+    <string name="action_rate">Berikan rating</string>
     <string name="action_settings">Pengaturan</string>
     <string name="action_share">Bagikan ke teman</string>
     <string name="cancel">Batal</string>
@@ -66,4 +66,6 @@
     <string name="permission_sms_granted">Terima kasih! sekarang anda bisa mengirim SMS.</string>
     <string name="permission_sms_denied">Maaf, aplikasi ini tidak bisa mengirim SMS tanpa diberikan ijin oleh anda.</string>
     <string name="permission_export_denied">Maaf, aplikasi ini tidak bisa meng-export pesan tanpa diberi akses membuat file.</string>
+    <string name="action_copy">Buat duplikat</string>
+    <string name="message_copied">Duplikat telah dibuat</string>
 </resources>

@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -108,7 +109,7 @@ public class SMSFormFragment extends Fragment {
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveSMS();
+                saveSMS(false);
             }
         });
 
@@ -167,9 +168,14 @@ public class SMSFormFragment extends Fragment {
             case R.id.action_delete:
                 deleteSMS();
                 break;
+            case R.id.action_copy:
+                saveSMS(true);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 
     private void hideKeyboard() {
         // Check if no view has focus:
@@ -211,7 +217,7 @@ public class SMSFormFragment extends Fragment {
         }
     }
 
-    private void saveSMS() {
+    private void saveSMS(boolean duplicate) {
         // do some simple validations
         if (smstitle.getText().toString().isEmpty()) {
             smstitle.setError(getString(R.string.title_error));
@@ -258,11 +264,30 @@ public class SMSFormFragment extends Fragment {
                     message.getText().toString(),
                     shortcut);
         }
-        toggleShortcut(addShortcut.isChecked());
 
+        toggleShortcut(addShortcut.isChecked());
         hideKeyboard();
-        Toast.makeText(getActivity(), R.string.message_saved, Toast.LENGTH_SHORT).show();
-        getActivity().onBackPressed();
+
+        if(duplicate){
+            // POP current backstack
+            getActivity().getSupportFragmentManager().popBackStack();
+
+            SMSFormFragment duplicateForm = new SMSFormFragment();
+            final SMSItem duplicateItem = SMSItem.copyFrom(getActivity(), smsItem);
+            duplicateForm.setArguments(duplicateItem.toBundle());
+
+            // Replace current fragment with the new one.
+            FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.container, duplicateForm);
+            ft.addToBackStack("sms_form");
+            ft.commit();
+
+            Toast.makeText(getActivity(), R.string.message_copied, Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(getActivity(), R.string.message_saved, Toast.LENGTH_SHORT).show();
+            getActivity().onBackPressed();
+        }
+
     }
 
     // used to set reference to recipient item index before contact Pick.

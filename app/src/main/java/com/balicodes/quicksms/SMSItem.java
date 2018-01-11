@@ -91,6 +91,10 @@ public class SMSItem {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getNumber() {
         return number;
     }
@@ -189,6 +193,10 @@ public class SMSItem {
         dbHelper.update(id, title, number, message, shortcut);
         dbHelper.close();
         return this;
+    }
+
+    public static SMSItem copyFrom(Context context, SMSItem item){
+        return SMSItem.create(context, item.getTitle() + " (copy)", item.getNumber(), item.getMessage(), item.getShortcut());
     }
 
     public void delete(Context context) {
