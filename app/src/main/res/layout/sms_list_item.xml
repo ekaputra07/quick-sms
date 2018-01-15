@@ -15,7 +15,7 @@
         android:layout_gravity="center_horizontal">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="New Text"
             android:id="@+id/smsTitleTxt"
@@ -28,7 +28,6 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageView"
             android:layout_gravity="right"
             android:src="@drawable/ic_chevron_right_black_24dp" />
 

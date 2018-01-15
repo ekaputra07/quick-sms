@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2016-2018 Eka Putra
+ *
+ * Quick SMS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.balicodes.quicksms
 
 import android.app.Activity
@@ -7,11 +24,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 
-/**
- * Created by eka on 6/18/16.
- */
-class AboutDialog constructor(context: Context) {
-    private val context = context
+class AboutDialog constructor(val context: Context) {
     private val builder: AlertDialog.Builder = AlertDialog.Builder(context)
     var rateListener: View.OnClickListener? = null
     var shareListener: View.OnClickListener? = null
@@ -27,7 +40,7 @@ class AboutDialog constructor(context: Context) {
         val aboutTxt = ctx.resources.getString(R.string.about_1)
                 .replace("{APP_NAME}", ctx.resources.getString(R.string.app_name))
                 .replace("{VERSION_NAME}", ctx.resources.getString(R.string.version_name))
-        about.setText(aboutTxt);
+        about.text = aboutTxt
 
         val btnRate: Button = messageView.findViewById(R.id.btnRate)
         if (rateListener != null)

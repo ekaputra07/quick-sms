@@ -1,9 +1,25 @@
+/*
+ * Copyright (C) 2016-2018 Eka Putra
+ *
+ * Quick SMS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.balicodes.quicksms;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.SyncStats;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
@@ -14,11 +30,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by eka on 6/27/15.
- */
-public class DBHelper extends SQLiteOpenHelper {
-    private Context context;
+class DBHelper extends SQLiteOpenHelper {
+    private final Context context;
     private static final String COLUMN_TITLE = "title";
     private static final String COLUMN_NUMBER = "number";
     private static final String COLUMN_MESSAGE = "message";
@@ -52,8 +65,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public int numRows() {
         SQLiteDatabase db = this.getReadableDatabase();
-        int numRows = (int) DatabaseUtils.queryNumEntries(db, TABLE_NAME);
-        return numRows;
+        return (int) DatabaseUtils.queryNumEntries(db, TABLE_NAME);
     }
 
     public long insert(String title, String number, String message, String confirm) {
@@ -63,8 +75,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_NUMBER, number);
         contentValues.put(COLUMN_MESSAGE, message);
         contentValues.put(COLUMN_CONFIRM, confirm);
-        long id = db.insert(TABLE_NAME, null, contentValues);
-        return id;
+        return db.insert(TABLE_NAME, null, contentValues);
     }
 
     public long update(long id, String title, String number, String message, String confirm) {
@@ -104,7 +115,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public List<SMSItem> all() {
-        List<SMSItem> array_list = new ArrayList<SMSItem>();
+        List<SMSItem> array_list = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -112,11 +123,11 @@ public class DBHelper extends SQLiteOpenHelper {
         String sort_by = sp.getString(context.getString(R.string.pref_sort_by_key),
                 context.getString(R.string.pref_sort_by_default_value));
 
-        Cursor res = null;
+        Cursor res;
         res = db.rawQuery("select * from " + TABLE_NAME + " " + sort_by, null);
         res.moveToFirst();
 
-        while (res.isAfterLast() == false) {
+        while (!res.isAfterLast()) {
             Log.d("ALL", "ALL");
             SMSItem item = new SMSItem(
                     res.getInt(res.getColumnIndex("id")),

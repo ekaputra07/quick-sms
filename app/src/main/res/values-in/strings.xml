@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="action_about">Tentang</string>
-    <string name="action_cancel">Batal</string>
     <string name="action_delete">Hapus</string>
-    <string name="action_edit">Edit</string>
     <string name="action_new">Baru</string>
     <string name="action_rate">Berikan rating</string>
     <string name="action_settings">Pengaturan</string>
@@ -15,7 +13,6 @@
     <string name="message_hint">Pesan</string>
     <string name="message_saved">Pesan disimpan</string>
     <string name="number_error">Nomer harus diisi</string>
-    <string name="number_hint">Nomer HP</string>
     <string name="pref_activity_title">Pengaturan</string>
     <string name="pref_enable_beep_summary">Sebagai tanda SMS dikirim</string>
     <string name="pref_enable_beep_title">Aktifkan suara beep?</string>
@@ -25,8 +22,6 @@
     <string name="title_hint">Judul</string>
     <string name="to">Ke :</string>
     <string name="yes">Iya</string>
-    <string name="pref_sort_summary">Urutkan berdasarkan waktu dibuat</string>
-    <string name="pref_sort_title">Pesan terbaru tampil pertama</string>
     <string name="tap_info">Pilih dan tahan untuk mengirim SMS</string>
     <string name="confirm_sending">Kirim SMS?</string>
     <string name="no">Tidak</string>
@@ -34,13 +29,12 @@
     <string name="pref_sending_confirmation_summary">Anda akan diminta mengkonfirmasi sebelum mengirim SMS</string>
     <string name="pref_sending_confirmation_title">Konfirmasi pengiriman</string>
     <string name="retry">Coba lagi</string>
-    <string name="sending">Mengirim SMS...</string>
     <string name="sending_failed">Gagal mengirim SMS</string>
     <string name="about_1">{APP_NAME}\nVersi {VERSION_NAME}\n\nPengembang:\nEka Putra\nbalitechy.com</string>
     <string name="about_2">Suka dengan aplikasi ini? berikanlah rating di Google Play beserta masukannya supaya menjadi lebih baik lagi. Terima kasih.</string>
     <string name="status_delivered">{COUNT} diterima</string>
     <string name="status_failed">{COUNT} gagal,</string>
-    <string name="status_sending">Mengirim...</string>
+    <string name="status_sending">Mengirim…</string>
     <string name="status_sent">{COUNT} terkirim,</string>
     <string name="sending_failed_info">Pastikan pulsa anda mencukupi untuk mengirim SMS.</string>
     <string name="add_recipient">+ Tambah penerima</string>
@@ -51,13 +45,12 @@
     <string name="title_activity_resend">Gagal mengirim ke nomer berikut</string>
     <string name="max_recipients_warning">Maksimum %s penerima per SMS</string>
     <string name="title_activity_export_import">Export / Import pesan</string>
-    <string name="action_close">Tutup</string>
     <string name="export_desc">Pesan akan di export ke folder `Download` sebagai file CSV.</string>
     <string name="import_desc">Pastikan format file yang akan diimport benar.</string>
     <string name="export">Export</string>
-    <string name="exporting">Mengexport data...</string>
+    <string name="exporting">Mengexport data…</string>
     <string name="import_str">Import</string>
-    <string name="importing">Mengimport data...</string>
+    <string name="importing">Mengimport data…</string>
     <string name="import_error_io">Gagal membuka file!</string>
     <string name="import_error_format">Gagal mengimport file, pastikan file memiliki format yang benar.</string>
     <string name="import_success">Pesan berhasil diimport.</string>

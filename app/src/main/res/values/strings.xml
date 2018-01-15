@@ -2,18 +2,14 @@
 <resources>
     <string name="action_settings">Settings</string>
     <string name="action_new">New</string>
-    <string name="action_cancel">Cancel</string>
-    <string name="action_edit">Edit</string>
     <string name="action_delete">Delete</string>
     <string name="action_share">Share to friends</string>
     <string name="action_rate">Rate Quick SMS</string>
     <string name="action_about">About</string>
-    <string name="action_close">Close</string>
     <string name="action_copy">Create a copy</string>
     <string name="to">To :</string>
 
     <string name="title_hint">Title</string>
-    <string name="number_hint">Phone number</string>
     <string name="message_hint">Message</string>
     <string name="save">SAVE MESSAGE</string>
     <string name="max_recipients_warning">Maximum %s recipients per SMS</string>
@@ -28,7 +24,7 @@
     <string name="ok">OK</string>
     <string name="retry">Retry</string>
 
-    <string name="status_sending">Sending...</string>
+    <string name="status_sending">Sending…</string>
     <string name="status_sent">{COUNT} sent</string>
     <string name="status_delivered">{COUNT} delivered</string>
     <string name="status_failed">{COUNT} failed</string>
@@ -36,9 +32,9 @@
     <string name="export_desc">Messages will be exported into your `Download` directory as a CSV file.</string>
     <string name="import_desc">All imported messages is simply treated as new messages. Please make sure the file has correct CSV format (value separated by `|`).</string>
     <string name="export">Export</string>
-    <string name="exporting">Exporting...</string>
+    <string name="exporting">Exporting…</string>
     <string name="import_str">Import</string>
-    <string name="importing">Importing...</string>
+    <string name="importing">Importing…</string>
     <string name="import_error_io">Error opening the file!</string>
     <string name="import_error_format">Error importing file, please make sure the file has correct format.</string>
     <string name="import_success">Messages imported successfully.</string>
@@ -54,7 +50,6 @@
     <string name="message_saved">Message saved</string>
     <string name="message_deleted">Message deleted</string>
     <string name="message_copied">Message copied</string>
-    <string name="sending">Sending SMS...</string>
     <string name="tap_info">Tap and hold the message to send</string>
     <string name="add_recipient">+ ADD MORE RECIPIENT</string>
 
@@ -62,10 +57,6 @@
     <string name="pref_enable_beep_key" translatable="false">enable_beep</string>
     <string name="pref_enable_beep_title">Enable beep sound</string>
     <string name="pref_enable_beep_summary">An indicator SMS is sending</string>
-
-    <string name="pref_sort_key" translatable="false">sort_by_created</string>
-    <string name="pref_sort_title">Newest message first</string>
-    <string name="pref_sort_summary">Sorted by creation time in descending order</string>
 
     <string name="pref_sort_by_key" translatable="false">sort_by_key</string>
     <string name="pref_sort_by_title">Messages ordering</string>

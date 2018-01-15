@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2016-2018 Eka Putra
+ *
+ * Quick SMS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.balicodes.quicksms
 
 import android.app.Activity
@@ -17,13 +34,8 @@ import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 import java.io.PrintWriter
-import java.net.URI
 import java.sql.Timestamp
-import java.util.jar.Manifest
 
-/**
- * Created by ekaputra on 12/25/17.
- */
 class ExportImportActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,9 +47,9 @@ class ExportImportActivity : AppCompatActivity() {
 
             // Android API 23+ requires this
             val permission = ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            if(permission == PackageManager.PERMISSION_GRANTED){
+            if (permission == PackageManager.PERMISSION_GRANTED) {
                 ExportTask().execute()
-            }else{
+            } else {
                 ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), Config.WRITE_STORAGE_PERMISSION_REQUEST)
             }
 
@@ -66,10 +78,10 @@ class ExportImportActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if(requestCode == Config.WRITE_STORAGE_PERMISSION_REQUEST && grantResults.isNotEmpty()){
-            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == Config.WRITE_STORAGE_PERMISSION_REQUEST && grantResults.isNotEmpty()) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 ExportTask().execute()
-            }else{
+            } else {
                 Toast.makeText(this, getString(R.string.permission_export_denied), Toast.LENGTH_LONG).show()
             }
         }
@@ -103,7 +115,7 @@ class ExportImportActivity : AppCompatActivity() {
                 val dbHelper = DBHelper(this)
                 val smsItems = dbHelper.all()
                 for (item in smsItems) {
-                    val row: String = "${item.id}|${item.title}|${item.number}|${item.message}"
+                    val row = "${item.id}|${item.title}|${item.number}|${item.message}"
                     Log.d(javaClass.simpleName, row)
                     printWriter.println(row)
                 }
@@ -126,13 +138,13 @@ class ExportImportActivity : AppCompatActivity() {
             val messages: List<Array<String>> = csvReader.readCSV()
 
             // write to DB
-            for(message in messages){
+            for (message in messages) {
                 SMSItem.create(this, message[1], message[2], message[3], "NO")
             }
-        }catch (io: IOException){
+        } catch (io: IOException) {
             io.printStackTrace()
             return getString(R.string.import_error_io)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             return getString(R.string.import_error_format)
         }
@@ -164,7 +176,7 @@ class ExportImportActivity : AppCompatActivity() {
         }
 
         override fun doInBackground(vararg uri: Uri?): String {
-            return import(uri.get(0))
+            return import(uri[0])
         }
 
         override fun onPostExecute(result: String?) {

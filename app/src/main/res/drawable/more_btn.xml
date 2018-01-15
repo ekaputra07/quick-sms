@@ -8,7 +8,7 @@
             <corners android:radius="5dp"/>
             <stroke android:width="1dp" android:color="#00aad4" />
         </shape>
-        <color android:color="#ffffff"></color>
+        <color android:color="#ffffff" />
     </item>
 
     <item android:state_focused="false" android:state_pressed="true">
@@ -18,7 +18,7 @@
             <corners android:radius="5dp"/>
             <stroke android:width="1dp" android:color="#00aad4" />
         </shape>
-        <color android:color="#ffffff"></color>
+        <color android:color="#ffffff" />
     </item>
 
     <item>
@@ -28,6 +28,6 @@
             <corners android:radius="5dp"/>
             <stroke android:width="1dp" android:color="@color/grey" />
         </shape>
-        <color android:color="@color/grey"></color>
+        <color android:color="@color/grey" />
     </item>
 </selector>
