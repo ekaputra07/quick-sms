@@ -266,7 +266,9 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
     ----------------------------------------------------------------------------------------------*/
     private inner class SentReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
+
             val recBundle = intent.getBundleExtra(Config.RECIPIENT_EXTRA_KEY)
+            val confirmSending = sp!!.getBoolean(getString(R.string.pref_sending_confirmation_key), false)
 
             if (resultCode == Activity.RESULT_OK) {
                 if (recBundle != null) {
@@ -287,7 +289,7 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
             // If finish sending, check whether all sent successfully.
             // if not, show resend screen with all failed recipients.
             currentSendingCount++
-            if (currentSendingCount == currentSMSitem!!.totalRecipients()) {
+            if (currentSendingCount == currentSMSitem?.totalRecipients()) {
 
                 if (currentSMSitem!!.failedInfoList.size > 0) {
                     afterSending = true
@@ -297,8 +299,7 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
                         resendSingleRecipient()
                     } else {
 
-                        val confirm_before_send = sp!!.getBoolean(getString(R.string.pref_sending_confirmation_key), false)
-                        if (confirm_before_send) {
+                        if (confirmSending) {
                             afterSending = false
                         }
 

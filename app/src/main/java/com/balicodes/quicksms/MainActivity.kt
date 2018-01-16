@@ -148,7 +148,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        if (requestCode == Config.SEND_SMS_PERMISSION_REQUEST && grantResults.size > 0) {
+        if (requestCode == Config.SEND_SMS_PERMISSION_REQUEST && grantResults.isNotEmpty()) {
             Log.d(MainActivity::class.java.name, grantResults.size.toString())
 
             if (Build.VERSION.SDK_INT == 26) {
