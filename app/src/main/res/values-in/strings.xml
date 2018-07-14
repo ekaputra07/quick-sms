@@ -30,7 +30,7 @@
     <string name="pref_sending_confirmation_title">Konfirmasi pengiriman</string>
     <string name="retry">Coba lagi</string>
     <string name="sending_failed">Gagal mengirim SMS</string>
-    <string name="about_1">{APP_NAME}\nVersi {VERSION_NAME}\n\nPengembang:\nEka Putra\nbalitechy.com</string>
+    <string name="about_1">{APP_NAME} Versi {VERSION_NAME}  Pengembang: Eka Putra\nKode sumber: https://github.com/ekaputra07/quick-sms</string>
     <string name="about_2">Suka dengan aplikasi ini? berikanlah rating di Google Play beserta masukannya supaya menjadi lebih baik lagi. Terima kasih.</string>
     <string name="status_delivered">{COUNT} diterima</string>
     <string name="status_failed">{COUNT} gagal,</string>
