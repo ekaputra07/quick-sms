@@ -20,10 +20,9 @@ package com.balicodes.quicksms
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.ContentUris
-import android.content.DialogInterface
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 
 class ShortcutHandlerActivity : Activity() {
     private val currentSendingCount = 0
@@ -32,9 +31,10 @@ class ShortcutHandlerActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val intent = intent
         val uri = intent.data
         val smsID = ContentUris.parseId(uri)
+
+        Log.d(this.localClassName.toString(), smsID.toString())
 
         if (smsID != 0L) {
             val dbHelper = DBHelper(this)

@@ -3,8 +3,8 @@
     package="com.balicodes.quicksms">
 
     <uses-permission android:name="android.permission.SEND_SMS" />
-    <!--<uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>-->
-    <!--<uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT"/>-->
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
+    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
