@@ -23,7 +23,7 @@ class Config {
         const val PICK_FILE_REQUEST = 1
         const val SEND_SMS_PERMISSION_REQUEST = 1
         const val WRITE_STORAGE_PERMISSION_REQUEST = 2
-        const val MAX_RECIPIENTS_PER_SMS = 5
+        const val MAX_RECIPIENTS_PER_SMS = 10
         const val SMS_DATA_BASE_URI = "content://com.balicodes.quicksms.SMS"
         const val SENT_STATUS_ACTION = "com.balicodes.quicksms.SENT_STATUS"
         const val DELIVERY_STATUS_ACTION = "com.balicodes.quicksms.DELIVERY_STATUS"
