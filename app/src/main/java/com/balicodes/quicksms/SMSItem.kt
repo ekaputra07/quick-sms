@@ -167,9 +167,9 @@ class SMSItem(val id: Long, val title: String, val number: String, val message: 
         }
 
         /* ---------------------------------------------------------------------------------------------
-    Convert "Eka:0817476584,Vera:123456789"
-    into [["Eka", "08174765840"], ["Vera","123456789"]]
-    ----------------------------------------------------------------------------------------------*/
+        Convert "Eka:0817476584,Vera:123456789"
+        into [["Eka", "08174765840"], ["Vera","123456789"]]
+        ----------------------------------------------------------------------------------------------*/
         fun parseReceiverCSV(numberCSV: String?): List<Array<String>> {
             // create a list of map.
             val list = ArrayList<Array<String>>()
