@@ -72,8 +72,8 @@
     <string name="pref_enable_delivery_report_summary">Caution! Some provider will charge you additional cost for SMS delivery report</string>
 
     <string name="share_text">Create and send SMS template with Quick SMS. {DOWNLOAD_LINK}</string>
-    <string name="about_1">{APP_NAME} Version {VERSION_NAME}  Developer: Eka Putra\nSource code: https://github.com/ekaputra07/quick-sms</string>
-    <string name="about_2">Love this app? please rate us on Google Play, any feedback are welcome. Thank You.</string>
+    <string name="about_1">{APP_NAME} Version {VERSION_NAME}.\n\nThis app is now an open source project.\nSource code: https://github.com/ekaputra07/quick-sms</string>
+    <string name="about_2">Love this app? please rate us on Google Play, feedback and contribution are welcome.</string>
     <string name="title_activity_resend">Failed sending to these numbers</string>
     <string name="title_activity_export_import">Export / Import messages</string>
 
