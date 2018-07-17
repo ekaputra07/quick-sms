@@ -1,6 +1,13 @@
-![192](https://user-images.githubusercontent.com/34313493/42802218-187204ca-89c4-11e8-867a-8756ba3cedff.png)
+![App Icon](https://raw.github.com/ekaputra07/quick-sms/master/logo/144.png)
 
 # Quick SMS Android
-Android app to create and send predefined SMS messages easily. Available for download via Google Play: https://play.google.com/store/apps/details?id=com.balicodes.quicksms
+Android app to create and send predefined SMS messages easily.
 
-![rect32843.png](https://raw.github.com/ekaputra07/quick-sms/master/screenshots/rect32843.png)
+![Screenshots](https://raw.github.com/ekaputra07/quick-sms/master/screenshots/rect32843.png)
+
+## Get it on Google Play!
+[https://play.google.com/store/apps/details?id=com.balicodes.quicksms](https://play.google.com/store/apps/details?id=com.balicodes.quicksms&utm_source=GitHub)
+
+## Icon
+
+App icon by [Md Masud Rana](https://github.com/maaudrana)
