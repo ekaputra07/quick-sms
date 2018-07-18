@@ -19,15 +19,18 @@ package com.balicodes.quicksms.entity
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
+import com.balicodes.quicksms.SMSItem
 
 @Entity(tableName = MessageEntity.TABLE_NAME)
-class MessageEntity(val title: String = "",
-                    val number: String = "",
-                    val message: String = "",
-                    val confirm: String = "") {
+class MessageEntity(@PrimaryKey(autoGenerate = true) var id: Long?,
+                    var title: String?,
+                    var number: String?,
+                    var message: String?,
+                    var confirm: String?) {
 
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0
+    fun toSmsItem(): SMSItem{
+        return SMSItem(id!!, title!!, number!!, message!!, confirm!!)
+    }
 
     companion object {
         const val TABLE_NAME = "sms"

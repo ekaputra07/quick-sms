@@ -25,6 +25,7 @@ import android.os.Parcelable
 import android.telephony.SmsManager
 import android.text.TextUtils
 import android.util.Log
+import com.balicodes.quicksms.entity.MessageEntity
 
 import java.util.ArrayList
 
@@ -90,6 +91,11 @@ class SMSItem(val id: Long, val title: String, val number: String, val message: 
         return bundle
     }
 
+    fun toEntity(): MessageEntity{
+        return MessageEntity(id, title, number, message, shortcut)
+    }
+
+    @Deprecated("Using DBHelper has been deprecated")
     fun update(context: Context, title: String, number: String, message: String, shortcut: String): SMSItem {
         val dbHelper = DBHelper(context)
         dbHelper.update(id, title, number, message, shortcut)
@@ -97,6 +103,7 @@ class SMSItem(val id: Long, val title: String, val number: String, val message: 
         return this
     }
 
+    @Deprecated("Using DBHelper has been deprecated")
     fun delete(context: Context) {
         val dbHelper = DBHelper(context)
         dbHelper.delete(id)
@@ -195,7 +202,7 @@ class SMSItem(val id: Long, val title: String, val number: String, val message: 
             return list
         }
 
-
+        @Deprecated("Using DBHelper has been deprecated")
         fun create(context: Context, title: String, number: String, message: String, shortcut: String): SMSItem {
             val dbHelper = DBHelper(context)
             val insertId = dbHelper.insert(title, number, message, shortcut)
@@ -204,6 +211,7 @@ class SMSItem(val id: Long, val title: String, val number: String, val message: 
             return SMSItem(insertId, title, number, message, shortcut)
         }
 
+        @Deprecated("Using DBHelper has been deprecated")
         fun copyFrom(context: Context, item: SMSItem): SMSItem {
             return SMSItem.create(context, item.title + " (copy)", item.number, item.message, item.shortcut)
         }

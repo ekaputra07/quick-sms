@@ -19,18 +19,23 @@ package com.balicodes.quicksms
 
 import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
+import android.arch.lifecycle.ViewModelProviders
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.database.DataSetObserver
 import android.net.Uri
+import android.nfc.Tag
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.support.v4.app.Fragment
 import android.text.TextUtils
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import com.balicodes.quicksms.entity.MessageEntity
+import com.balicodes.quicksms.viewmodel.MessageListViewModel
 import java.util.*
 
 class SMSFormFragment : Fragment() {
@@ -42,13 +47,15 @@ class SMSFormFragment : Fragment() {
     private val recipients = ArrayList<Array<String>>()
     private var recipientListView: NoScrollListView? = null
     private var recipientListAdapter: RecipientListAdapter? = null
-    private val dbHelper: DBHelper? = null
     private var smsItem: SMSItem? = null
     private var recipientPickIndex: Int = 0
+    private var viewModel: MessageListViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+
+        viewModel = ViewModelProviders.of(this).get(MessageListViewModel::class.java)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -141,7 +148,7 @@ class SMSFormFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         super.onCreateOptionsMenu(menu, inflater)
-        if (smsItem!!.id > 0) {
+        if (smsItem!!.id > -1) {
             inflater!!.inflate(R.menu.sms_form_menu, menu)
         }
     }
@@ -172,7 +179,7 @@ class SMSFormFragment : Fragment() {
 
         builder.setPositiveButton(R.string.yes) { dialog, id ->
             toggleShortcut(false) // delete shortcut
-            smsItem!!.delete(this@SMSFormFragment.activity)
+            viewModel!!.deleteMessage(smsItem!!.toEntity())
 
             Toast.makeText(activity, R.string.message_deleted, Toast.LENGTH_SHORT).show()
             activity.onBackPressed()
@@ -224,20 +231,13 @@ class SMSFormFragment : Fragment() {
 
         if (smsItem!!.id > 0) {
             // Update
-            smsItem!!.update(
-                    activity,
-                    smstitle!!.text.toString(),
-                    csv,
-                    message!!.text.toString(),
-                    shortcut)
+            val item = SMSItem(smsItem!!.id, smstitle!!.text.toString(), csv, message!!.text.toString(), shortcut)
+            viewModel!!.updateMessage(item.toEntity())
+
         } else {
             // Create
-            smsItem = SMSItem.create(
-                    activity,
-                    smstitle!!.text.toString(),
-                    csv,
-                    message!!.text.toString(),
-                    shortcut)
+            val item = SMSItem(0L, smstitle!!.text.toString(), csv, message!!.text.toString(), shortcut)
+            viewModel!!.insertMessage(item.toEntity(), { println("Message created with ID: " + it.toString()) })
         }
 
         toggleShortcut(addShortcut!!.isChecked)
@@ -248,16 +248,22 @@ class SMSFormFragment : Fragment() {
             activity.supportFragmentManager.popBackStack()
 
             val duplicateForm = SMSFormFragment()
-            val duplicateItem = SMSItem.copyFrom(activity, smsItem!!)
-            duplicateForm.arguments = duplicateItem.toBundle()
 
-            // Replace current fragment with the new one.
-            val ft = activity.supportFragmentManager.beginTransaction()
-            ft.replace(R.id.container, duplicateForm)
-            ft.addToBackStack("sms_form")
-            ft.commit()
+            // Insert operation is done in async, so we need to wait for it finished before updating
+            // the form.
+            viewModel!!.copyMessage(smsItem!!.toEntity(), {
 
-            Toast.makeText(activity, R.string.message_copied, Toast.LENGTH_SHORT).show()
+                duplicateForm.arguments = it.toSmsItem().toBundle()
+
+                // Replace current fragment with the new one.
+                val ft = activity.supportFragmentManager.beginTransaction()
+                ft.replace(R.id.container, duplicateForm)
+                ft.addToBackStack("sms_form")
+                ft.commit()
+
+                Toast.makeText(activity, R.string.message_copied, Toast.LENGTH_SHORT).show()
+            })
+
         } else {
             Toast.makeText(activity, R.string.message_saved, Toast.LENGTH_SHORT).show()
             activity.onBackPressed()

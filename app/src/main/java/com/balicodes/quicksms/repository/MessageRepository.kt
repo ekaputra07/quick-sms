@@ -23,6 +23,7 @@ import com.balicodes.quicksms.dao.MessageDao
 import com.balicodes.quicksms.database.AppDatabase
 import com.balicodes.quicksms.entity.MessageEntity
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 
 class MessageRepository(val app: Application) {
 
@@ -41,8 +42,14 @@ class MessageRepository(val app: Application) {
     //-- For Insert, Update and Delete can't be called directly from main thread (performance reason)
     //-- Need to call it from separate thread. We use doAsync from 'org.jetbrains.anko:anko-commons'.
 
-    fun insertMessage(message: MessageEntity) {
-        doAsync { messageDao.insertMessage(message) }
+    fun insertMessage(message: MessageEntity, listener: (Long) -> Unit) {
+        message.id = null
+        doAsync {
+            val id = messageDao.insertMessage(message)
+            uiThread {
+                listener.invoke(id)
+            }
+        }
     }
 
     fun updateMessage(message: MessageEntity) {

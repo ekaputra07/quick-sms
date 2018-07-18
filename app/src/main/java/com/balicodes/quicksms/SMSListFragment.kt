@@ -20,6 +20,9 @@ package com.balicodes.quicksms
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.Application
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.DialogInterface
@@ -46,6 +49,8 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.FrameLayout
 import android.widget.ListView
+import com.balicodes.quicksms.entity.MessageEntity
+import com.balicodes.quicksms.viewmodel.MessageListViewModel
 
 import java.util.ArrayList
 
@@ -53,6 +58,7 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
     private val TAG = SMSListFragment::class.java.toString()
 
     private var dbHelper: DBHelper? = null
+    private var viewModel: MessageListViewModel? = null
     private val listSMS = ArrayList<SMSItem>()
     private var listAdapter: SMSListAdapter? = null
     private var tapInfo: FrameLayout? = null
@@ -69,25 +75,29 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+
+        viewModel = ViewModelProviders.of(this).get(MessageListViewModel::class.java)
+        viewModel!!.getMessages()?.observe(this, Observer<List<MessageEntity>> {
+            listSMS.clear()
+
+            // show hide tap info frame.
+            if (it!!.isEmpty()) {
+                tapInfo!!.visibility = View.GONE
+            } else {
+                tapInfo!!.visibility = View.VISIBLE
+            }
+
+            val items = ArrayList<SMSItem>()
+            it.forEach { items.add(it.toSmsItem()) }
+
+            listSMS.addAll(items)
+            listAdapter!!.notifyDataSetChanged()
+        })
+
         dbHelper = DBHelper(activity)
         listAdapter = SMSListAdapter(activity, listSMS)
         beep = MediaPlayer.create(activity, R.raw.beep)
         beep!!.setVolume(0.5.toFloat(), 0.5.toFloat())
-    }
-
-    private fun loadList() {
-        listSMS.clear()
-        val all = dbHelper!!.all()
-
-        // show hide tap info frame.
-        if (all.size == 0) {
-            tapInfo!!.visibility = View.GONE
-        } else {
-            tapInfo!!.visibility = View.VISIBLE
-        }
-
-        listSMS.addAll(all)
-        listAdapter!!.notifyDataSetChanged()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -141,7 +151,6 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         (activity as MainActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(false)
-        loadList()
     }
 
     /*----------------------------------------------------------------------------------------------

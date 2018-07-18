@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 // keystore.properties file, in the rootProject folder (should be ommited from version control).
 def keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -86,12 +87,12 @@ dependencies {
 
     // Room components (Manage DB)
     implementation "android.arch.persistence.room:runtime:$room_version"
-    annotationProcessor "android.arch.persistence.room:compiler:$room_version"
+    kapt "android.arch.persistence.room:compiler:$room_version"
     testImplementation "android.arch.persistence.room:testing:$room_version"
 
     // Lifecycle components (Live Data)
     implementation "android.arch.lifecycle:extensions:$archLifecycleVersion"
-    annotationProcessor "android.arch.lifecycle:compiler:$archLifecycleVersion"
+    kapt "android.arch.lifecycle:compiler:$archLifecycleVersion"
 
     implementation "org.jetbrains.anko:anko-commons:0.10.4"
 }
