@@ -50,7 +50,7 @@ class AboutDialog constructor(val context: Context) {
         if (shareListener != null)
             btnShare.setOnClickListener(shareListener)
 
-        builder.setIcon(R.drawable.ic_launcher)
+        builder.setIcon(R.drawable.ic_launcher_small)
         builder.setTitle(R.string.app_name)
         builder.setView(messageView)
         builder.create()
