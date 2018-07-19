@@ -25,8 +25,14 @@ import com.balicodes.quicksms.entity.MessageEntity
 @Dao
 interface MessageDao {
 
-    @Query("SELECT * FROM " + MessageEntity.TABLE_NAME + " ORDER BY :orderBy")
-    fun loadMessages(orderBy: String): LiveData<List<MessageEntity>>
+    @Query("SELECT * FROM " + MessageEntity.TABLE_NAME + " ORDER BY title")
+    fun loadMessagesOrderByTitle(): LiveData<List<MessageEntity>>
+
+    @Query("SELECT * FROM " + MessageEntity.TABLE_NAME + " ORDER BY id")
+    fun loadMessagesOrderById(): LiveData<List<MessageEntity>>
+
+    @Query("SELECT * FROM " + MessageEntity.TABLE_NAME + " ORDER BY id DESC")
+    fun loadMessagesOrderByIdDesc(): LiveData<List<MessageEntity>>
 
     @Query("SELECT * FROM " + MessageEntity.TABLE_NAME + " WHERE id = :id")
     fun loadMessage(id: Long): LiveData<MessageEntity>

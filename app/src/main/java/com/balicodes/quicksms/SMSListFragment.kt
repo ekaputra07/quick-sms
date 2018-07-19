@@ -20,12 +20,10 @@ package com.balicodes.quicksms
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.Application
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
@@ -50,15 +48,15 @@ import android.widget.AdapterView
 import android.widget.FrameLayout
 import android.widget.ListView
 import com.balicodes.quicksms.entity.MessageEntity
-import com.balicodes.quicksms.viewmodel.MessageListViewModel
+import com.balicodes.quicksms.viewmodel.MessageViewModel
 
 import java.util.ArrayList
 
 class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
+
     private val TAG = SMSListFragment::class.java.toString()
 
-    private var dbHelper: DBHelper? = null
-    private var viewModel: MessageListViewModel? = null
+    private var viewModel: MessageViewModel? = null
     private val listSMS = ArrayList<SMSItem>()
     private var listAdapter: SMSListAdapter? = null
     private var tapInfo: FrameLayout? = null
@@ -76,7 +74,11 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
-        viewModel = ViewModelProviders.of(this).get(MessageListViewModel::class.java)
+        val sp = PreferenceManager.getDefaultSharedPreferences(activity)
+        val sortBy = sp.getString(activity.getString(R.string.pref_sort_by_key), activity.getString(R.string.pref_sort_by_default_value))
+
+        viewModel = ViewModelProviders.of(activity).get(MessageViewModel::class.java)
+        viewModel!!.setOrderBy(sortBy)
         viewModel!!.getMessages()?.observe(this, Observer<List<MessageEntity>> {
             listSMS.clear()
 
@@ -94,7 +96,6 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
             listAdapter!!.notifyDataSetChanged()
         })
 
-        dbHelper = DBHelper(activity)
         listAdapter = SMSListAdapter(activity, listSMS)
         beep = MediaPlayer.create(activity, R.raw.beep)
         beep!!.setVolume(0.5.toFloat(), 0.5.toFloat())
@@ -121,10 +122,13 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater!!.inflate(R.layout.sms_list_fragment, container, false)
+
         tapInfo = view.findViewById(R.id.tap_info)
+
         val listView = view.findViewById<ListView>(R.id.listView)
         listView.adapter = listAdapter
         listView.onItemClickListener = this
+
         registerForContextMenu(listView)
 
         return view
@@ -136,10 +140,10 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
             return
         }
 
-        val smsitem = listSMS[position]
-        val form = SMSFormFragment()
-        form.arguments = smsitem.toBundle()
+        val item = listSMS[position]
+        viewModel!!.selectMessage(item.toEntity())
 
+        val form = SMSFormFragment()
         activity.supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.container, form)
@@ -353,24 +357,7 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
 
     override fun onPause() {
         super.onPause()
-        if (dbHelper != null) {
-            dbHelper!!.close()
-        }
         unregisterReceivers()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        if (dbHelper != null) {
-            dbHelper!!.close()
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (dbHelper != null) {
-            dbHelper!!.close()
-        }
     }
 
     override fun onResume() {

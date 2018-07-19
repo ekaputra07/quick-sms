@@ -112,8 +112,9 @@ class ExportImportActivity : AppCompatActivity() {
                 file!!.createNewFile()
                 printWriter = PrintWriter(FileWriter(file))
 
-                val dbHelper = DBHelper(this)
-                val smsItems = dbHelper.all()
+                //val dbHelper = DBHelper(this)
+                //val smsItems = dbHelper.all()
+                val smsItems = ArrayList<SMSItem>()
                 for (item in smsItems) {
                     val row = "${item.id}|${item.title}|${item.number}|${item.message}"
                     Log.d(javaClass.simpleName, row)
@@ -139,7 +140,7 @@ class ExportImportActivity : AppCompatActivity() {
 
             // write to DB
             for (message in messages) {
-                SMSItem.create(this, message[1], message[2], message[3], "NO")
+                //SMSItem.create(this, message[1], message[2], message[3], "NO")
             }
         } catch (io: IOException) {
             io.printStackTrace()

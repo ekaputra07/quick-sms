@@ -20,7 +20,7 @@
     <string name="share_text">Buat dan kirim template SMS kapan saja dengan Quick SMS. http://goo.gl/KjtDj4</string>
     <string name="title_error">Judul harus diisi</string>
     <string name="title_hint">Judul</string>
-    <string name="to">Ke :</string>
+    <string name="to">Ke : %s</string>
     <string name="yes">Iya</string>
     <string name="tap_info">Pilih dan tahan untuk mengirim SMS</string>
     <string name="confirm_sending">Kirim SMS?</string>

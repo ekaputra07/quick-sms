@@ -28,12 +28,8 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 
 internal class SMSListAdapter(private val context: Context, private val items: List<SMSItem>) : BaseAdapter() {
-    private val sp: SharedPreferences
 
-    init {
-
-        sp = PreferenceManager.getDefaultSharedPreferences(context)
-    }
+    private val sp = PreferenceManager.getDefaultSharedPreferences(context)
 
     fun setSending(position: Int) {
         items[position].setSending()
@@ -59,6 +55,7 @@ internal class SMSListAdapter(private val context: Context, private val items: L
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var convertView = convertView
+
         if (convertView == null) {
             val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             convertView = inflater.inflate(R.layout.sms_list_item, parent, false)
@@ -70,7 +67,7 @@ internal class SMSListAdapter(private val context: Context, private val items: L
 
         val number = items[position].label
         val msgTxt = convertView.findViewById<TextView>(R.id.smsMessageTxt)
-        msgTxt.text = context.getString(R.string.to) + " " + number
+        msgTxt.text = context.getString(R.string.to).format(number)
 
         val statusTxt = convertView.findViewById<TextView>(R.id.smsStatusTxt)
         val statusContainer = convertView.findViewById<RelativeLayout>(R.id.statusContainer)

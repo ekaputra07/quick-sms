@@ -7,7 +7,7 @@
     <string name="action_rate">Rate Quick SMS</string>
     <string name="action_about">About</string>
     <string name="action_copy">Create a copy</string>
-    <string name="to">To :</string>
+    <string name="to">To : %s</string>
 
     <string name="title_hint">Title</string>
     <string name="message_hint">Message</string>
@@ -61,7 +61,7 @@
     <string name="pref_sort_by_key" translatable="false">sort_by_key</string>
     <string name="pref_sort_by_title">Messages ordering</string>
     <string name="pref_sort_by_summary">Alphabetically</string>
-    <string name="pref_sort_by_default_value" translatable="false">ORDER BY title</string>
+    <string name="pref_sort_by_default_value" translatable="false">title</string>
 
     <string name="pref_sending_confirmation_key" translatable="false">sending_confirmation</string>
     <string name="pref_sending_confirmation_title">Sending confirmation</string>

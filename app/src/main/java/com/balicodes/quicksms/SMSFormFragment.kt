@@ -25,21 +25,20 @@ import android.content.Context
 import android.content.Intent
 import android.database.DataSetObserver
 import android.net.Uri
-import android.nfc.Tag
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.support.v4.app.Fragment
 import android.text.TextUtils
-import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import com.balicodes.quicksms.entity.MessageEntity
-import com.balicodes.quicksms.viewmodel.MessageListViewModel
+import com.balicodes.quicksms.viewmodel.MessageViewModel
 import java.util.*
 
 class SMSFormFragment : Fragment() {
 
+    private var viewModel: MessageViewModel? = null
     private var smstitle: EditText? = null
     private var message: EditText? = null
     private var addShortcut: Switch? = null
@@ -49,13 +48,16 @@ class SMSFormFragment : Fragment() {
     private var recipientListAdapter: RecipientListAdapter? = null
     private var smsItem: SMSItem? = null
     private var recipientPickIndex: Int = 0
-    private var viewModel: MessageListViewModel? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
-        viewModel = ViewModelProviders.of(this).get(MessageListViewModel::class.java)
+        (activity as MainActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        viewModel = ViewModelProviders.of(activity).get(MessageViewModel::class.java)
+        viewModel!!.getSelectedMessage().observe(this, android.arch.lifecycle.Observer { setFormData(it) })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -123,34 +125,12 @@ class SMSFormFragment : Fragment() {
         return view
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        (activity as MainActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-
-        val bundle = arguments
-        // edit mode
-        if (bundle != null) {
-            smsItem = SMSItem.fromBundle(bundle)
-
-            smstitle!!.setText(smsItem!!.title)
-            message!!.setText(smsItem!!.message)
-            recipients.addAll(SMSItem.parseReceiverCSV(smsItem!!.number))
-            addShortcut!!.isChecked = "YES" == smsItem!!.shortcut
-
-            // new mode
-        } else {
-            smsItem = SMSItem(0, "", "", "", "")
-            recipients.add(arrayOf("", ""))
-        }
-        recipientListAdapter!!.notifyDataSetChanged()
-    }
-
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         super.onCreateOptionsMenu(menu, inflater)
-        if (smsItem!!.id > -1) {
-            inflater!!.inflate(R.menu.sms_form_menu, menu)
-        }
+
+        viewModel!!.getSelectedMessage().observe(this, android.arch.lifecycle.Observer {
+            it?.let { inflater!!.inflate(R.menu.sms_form_menu, menu) }
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -163,6 +143,18 @@ class SMSFormFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+    private fun setFormData(messageEntity: MessageEntity?) {
+        messageEntity?.let {
+            smsItem = it.toSmsItem()
+
+            smstitle!!.setText(it.title)
+            message!!.setText(it.message)
+            recipients.addAll(SMSItem.parseReceiverCSV(it.number))
+            addShortcut!!.isChecked = "YES" == it.confirm
+
+            recipientListAdapter!!.notifyDataSetChanged()
+        }
+    }
 
     private fun hideKeyboard() {
         // Check if no view has focus:
