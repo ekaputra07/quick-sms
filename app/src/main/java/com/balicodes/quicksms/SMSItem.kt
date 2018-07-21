@@ -91,7 +91,7 @@ class SMSItem(val id: Long, val title: String, val number: String, val message: 
         return bundle
     }
 
-    fun toEntity(): MessageEntity{
+    fun toEntity(): MessageEntity {
         return MessageEntity(id, title, number, message, shortcut)
     }
 
@@ -139,13 +139,16 @@ class SMSItem(val id: Long, val title: String, val number: String, val message: 
     }
 
     companion object {
-        val STATUS_INACTIVE = 0
-        val STATUS_SENDING = 1
-        val STATUS_LISTENING = 2
+        const val STATUS_INACTIVE = 0
+        const val STATUS_SENDING = 1
+        const val STATUS_LISTENING = 2
 
-        val STATUS_SENT = 3
-        val STATUS_DELIVERED = 4
-        val STATUS_FAILED = 5
+        const val STATUS_SENT = 3
+        const val STATUS_DELIVERED = 4
+        const val STATUS_FAILED = 5
+
+        const val SHORTCUT_YES = "YES"
+        const val SHORTCUT_NO = "NO"
 
         fun fromBundle(bundle: Bundle): SMSItem? {
             try {

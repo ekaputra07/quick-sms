@@ -32,7 +32,7 @@ class MessageRepository(val app: Application) {
     //-- getMessages and getMessage returns LiveData so its safe to call directly from main thread.
 
     fun getMessages(orderBy: String): LiveData<List<MessageEntity>> {
-        return when(orderBy){
+        return when (orderBy) {
             "title" -> messageDao.loadMessagesOrderByTitle()
             "id_desc" -> messageDao.loadMessagesOrderByIdDesc()
             else -> messageDao.loadMessagesOrderById()
@@ -44,17 +44,31 @@ class MessageRepository(val app: Application) {
     //-- For Insert, Update and Delete can't be called directly from main thread (performance reason)
     //-- Need to call it from separate thread. We use doAsync from 'org.jetbrains.anko:anko-commons'.
 
-    fun insertMessage(message: MessageEntity, listener: (Long) -> Unit) {
+    fun insertMessage(message: MessageEntity, listener: (MessageEntity) -> Unit) {
         message.id = null
         doAsync {
             val id = messageDao.insertMessage(message)
+
             uiThread {
-                listener.invoke(id)
+                message.id = id
+                listener.invoke(message)
             }
         }
     }
 
-    fun updateMessage(message: MessageEntity) = doAsync { messageDao.updateMessage(message) }
+    fun insertMessages(vararg messages: MessageEntity) {
+        doAsync {
+            messageDao.insertMessages(*messages)
+        }
+    }
 
-    fun deleteMessage(message: MessageEntity) = doAsync { messageDao.deleteMessage(message) }
+    fun updateMessage(message: MessageEntity, listener: (MessageEntity) -> Unit) = doAsync {
+        messageDao.updateMessage(message)
+        uiThread { listener.invoke(message) }
+    }
+
+    fun deleteMessage(message: MessageEntity, listener: (MessageEntity) -> Unit) = doAsync {
+        messageDao.deleteMessage(message)
+        uiThread { listener.invoke(message) }
+    }
 }

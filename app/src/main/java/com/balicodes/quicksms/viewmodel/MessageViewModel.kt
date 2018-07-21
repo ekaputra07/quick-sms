@@ -18,10 +18,13 @@
 package com.balicodes.quicksms.viewmodel
 
 import android.app.Application
-import android.arch.lifecycle.*
+import android.arch.lifecycle.AndroidViewModel
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.Transformations
+import com.balicodes.quicksms.SMSItem
 import com.balicodes.quicksms.entity.MessageEntity
 import com.balicodes.quicksms.repository.MessageRepository
-import java.nio.ByteOrder
 
 class MessageViewModel(val app: Application) : AndroidViewModel(app) {
     private val messageRepository = MessageRepository(app)
@@ -35,21 +38,18 @@ class MessageViewModel(val app: Application) : AndroidViewModel(app) {
 
     //-- provide access to repository
 
-    fun insertMessage(message: MessageEntity, listener: (Long) -> Unit) = messageRepository.insertMessage(message, listener)
-
-    fun updateMessage(message: MessageEntity) = messageRepository.updateMessage(message)
-
-    fun deleteMessage(message: MessageEntity) = messageRepository.deleteMessage(message)
+    fun insertMessages(vararg messages: MessageEntity) = messageRepository.insertMessages(*messages)
+    fun insertMessage(message: MessageEntity, listener: (MessageEntity) -> Unit) = messageRepository.insertMessage(message, listener)
+    fun updateMessage(message: MessageEntity, listener: (MessageEntity) -> Unit) = messageRepository.updateMessage(message, listener)
+    fun deleteMessage(message: MessageEntity, listener: (MessageEntity) -> Unit) = messageRepository.deleteMessage(message, listener)
 
     fun copyMessage(fromMessage: MessageEntity, listener: (MessageEntity) -> Unit) {
         val copied = fromMessage
         copied.id = null
         copied.title = fromMessage.title + " (copy)"
+        copied.addShortcut = SMSItem.SHORTCUT_NO
 
-        insertMessage(copied, {
-            copied.id = it
-            listener.invoke(copied)
-        })
+        insertMessage(copied, listener::invoke)
     }
 
     //-- Messages list: getters and setters
@@ -62,7 +62,7 @@ class MessageViewModel(val app: Application) : AndroidViewModel(app) {
 
     //-- Message form: getters and setters
 
-    fun selectMessage(message: MessageEntity) {
+    fun selectMessage(message: MessageEntity?) {
         selectedMessage.value = message
     }
 

@@ -17,6 +17,7 @@
 
 package com.balicodes.quicksms.entity
 
+import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 import com.balicodes.quicksms.SMSItem
@@ -26,13 +27,18 @@ class MessageEntity(@PrimaryKey(autoGenerate = true) var id: Long?,
                     var title: String?,
                     var number: String?,
                     var message: String?,
-                    var confirm: String?) {
+                    @ColumnInfo(name = "confirm") var addShortcut: String?) {
 
-    fun toSmsItem(): SMSItem{
-        return SMSItem(id!!, title!!, number!!, message!!, confirm!!)
+    fun toSmsItem(): SMSItem {
+        return SMSItem(id!!, title!!, number!!, message!!, addShortcut!!)
     }
 
     companion object {
         const val TABLE_NAME = "sms"
+    }
+
+    override fun toString(): String {
+        return String.format("id: %s, title: %s, number: %s, message: %s, shortcut: %s",
+                id, title, number, message, addShortcut)
     }
 }

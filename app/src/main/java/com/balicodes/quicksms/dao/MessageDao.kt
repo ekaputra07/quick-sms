@@ -18,7 +18,6 @@
 package com.balicodes.quicksms.dao
 
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
 import android.arch.persistence.room.*
 import com.balicodes.quicksms.entity.MessageEntity
 
@@ -39,6 +38,9 @@ interface MessageDao {
 
     @Insert
     fun insertMessage(message: MessageEntity): Long
+
+    @Insert
+    fun insertMessages(vararg messages: MessageEntity)
 
     @Delete
     fun deleteMessage(message: MessageEntity)

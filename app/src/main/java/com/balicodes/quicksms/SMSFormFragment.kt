@@ -34,21 +34,21 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import com.balicodes.quicksms.entity.MessageEntity
 import com.balicodes.quicksms.viewmodel.MessageViewModel
-import java.util.*
 
 class SMSFormFragment : Fragment() {
 
     private var viewModel: MessageViewModel? = null
+
     private var smstitle: EditText? = null
     private var message: EditText? = null
     private var addShortcut: Switch? = null
     private var addRecipient: TextView? = null
+
     private val recipients = ArrayList<Array<String>>()
     private var recipientListView: NoScrollListView? = null
     private var recipientListAdapter: RecipientListAdapter? = null
     private var smsItem: SMSItem? = null
     private var recipientPickIndex: Int = 0
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,7 +109,7 @@ class SMSFormFragment : Fragment() {
         addShortcut = view.findViewById(R.id.addShortcut)
 
         val saveBtn = view.findViewById<Button>(R.id.saveBtn)
-        saveBtn.setOnClickListener { saveSMS(false) }
+        saveBtn.setOnClickListener { saveMessage() }
 
         // Show hide addRecipient
         recipientListAdapter!!.registerDataSetObserver(object : DataSetObserver() {
@@ -137,8 +137,8 @@ class SMSFormFragment : Fragment() {
         val id = item!!.itemId
 
         when (id) {
-            R.id.action_delete -> deleteSMS()
-            R.id.action_copy -> saveSMS(true)
+            R.id.action_delete -> deleteMessage()
+            R.id.action_copy -> viewModel!!.copyMessage(smsItem!!.toEntity(), this::afterDuplicate)
         }
         return super.onOptionsItemSelected(item)
     }
@@ -150,7 +150,7 @@ class SMSFormFragment : Fragment() {
             smstitle!!.setText(it.title)
             message!!.setText(it.message)
             recipients.addAll(SMSItem.parseReceiverCSV(it.number))
-            addShortcut!!.isChecked = "YES" == it.confirm
+            addShortcut!!.isChecked = (it.addShortcut == SMSItem.SHORTCUT_YES)
 
             recipientListAdapter!!.notifyDataSetChanged()
         }
@@ -165,18 +165,14 @@ class SMSFormFragment : Fragment() {
         }
     }
 
-    private fun deleteSMS() {
+    private fun deleteMessage() {
         val builder = AlertDialog.Builder(activity)
         builder.setTitle(R.string.confirm_delete_title)
 
-        builder.setPositiveButton(R.string.yes) { dialog, id ->
-            toggleShortcut(false) // delete shortcut
-            viewModel!!.deleteMessage(smsItem!!.toEntity())
-
-            Toast.makeText(activity, R.string.message_deleted, Toast.LENGTH_SHORT).show()
-            activity.onBackPressed()
+        builder.setPositiveButton(R.string.yes) { _, _ ->
+            viewModel!!.deleteMessage(smsItem!!.toEntity(), this::afterDelete)
         }
-        builder.setNegativeButton(R.string.cancel) { dialog, id -> }
+        builder.setNegativeButton(R.string.cancel) { _, _ -> }
         val dialog = builder.create()
         dialog.show()
     }
@@ -191,7 +187,8 @@ class SMSFormFragment : Fragment() {
         }
     }
 
-    private fun saveSMS(duplicate: Boolean) {
+    // Save / Update the message.
+    private fun saveMessage() {
         // do some simple validations
         if (smstitle!!.text.toString().isEmpty()) {
             smstitle!!.error = getString(R.string.title_error)
@@ -219,48 +216,57 @@ class SMSFormFragment : Fragment() {
             return
         }
 
-        val shortcut = if (addShortcut!!.isChecked) "YES" else "NO"
+        val shortcut = if (addShortcut!!.isChecked) SMSItem.SHORTCUT_YES else SMSItem.SHORTCUT_NO
 
-        if (smsItem!!.id > 0) {
+        if (smsItem != null) {
             // Update
             val item = SMSItem(smsItem!!.id, smstitle!!.text.toString(), csv, message!!.text.toString(), shortcut)
-            viewModel!!.updateMessage(item.toEntity())
+            viewModel!!.updateMessage(item.toEntity(), this::afterSave)
 
         } else {
             // Create
             val item = SMSItem(0L, smstitle!!.text.toString(), csv, message!!.text.toString(), shortcut)
-            viewModel!!.insertMessage(item.toEntity(), { println("Message created with ID: " + it.toString()) })
+            viewModel!!.insertMessage(item.toEntity(), this::afterSave)
         }
+    }
 
-        toggleShortcut(addShortcut!!.isChecked)
+    // After message has been saved.
+    private fun afterSave(messageEntity: MessageEntity) {
+        toggleShortcut(messageEntity, messageEntity.addShortcut == SMSItem.SHORTCUT_YES)
         hideKeyboard()
 
-        if (duplicate) {
-            // POP current backstack
-            activity.supportFragmentManager.popBackStack()
+        Toast.makeText(activity, R.string.message_saved, Toast.LENGTH_SHORT).show()
+        activity.onBackPressed()
+    }
 
-            val duplicateForm = SMSFormFragment()
+    // After message has been duplicated.
+    private fun afterDuplicate(messageEntity: MessageEntity) {
+        // Clear the recipients and notify adapter
+        recipients.clear()
+        recipientListAdapter?.notifyDataSetChanged()
 
-            // Insert operation is done in async, so we need to wait for it finished before updating
-            // the form.
-            viewModel!!.copyMessage(smsItem!!.toEntity(), {
+        // Set selected message.
+        viewModel!!.selectMessage(messageEntity)
 
-                duplicateForm.arguments = it.toSmsItem().toBundle()
+        // POP current backstack
+        activity.supportFragmentManager.popBackStack()
+        val duplicateForm = SMSFormFragment()
 
-                // Replace current fragment with the new one.
-                val ft = activity.supportFragmentManager.beginTransaction()
-                ft.replace(R.id.container, duplicateForm)
-                ft.addToBackStack("sms_form")
-                ft.commit()
+        // Replace current fragment with the new one.
+        val ft = activity.supportFragmentManager.beginTransaction()
+        ft.replace(R.id.container, duplicateForm)
+        ft.addToBackStack("sms_form")
+        ft.commit()
 
-                Toast.makeText(activity, R.string.message_copied, Toast.LENGTH_SHORT).show()
-            })
+        Toast.makeText(activity, R.string.message_copied, Toast.LENGTH_SHORT).show()
+    }
 
-        } else {
-            Toast.makeText(activity, R.string.message_saved, Toast.LENGTH_SHORT).show()
-            activity.onBackPressed()
-        }
+    // After message deleted.
+    private fun afterDelete(messageEntity: MessageEntity) {
+        toggleShortcut(messageEntity, false) // delete shortcut
 
+        Toast.makeText(activity, R.string.message_deleted, Toast.LENGTH_SHORT).show()
+        activity.onBackPressed()
     }
 
     // used to set reference to recipient item index before contact Pick.
@@ -268,14 +274,15 @@ class SMSFormFragment : Fragment() {
         recipientPickIndex = index
     }
 
-    private fun toggleShortcut(create: Boolean) {
+    // Toogle shortcut icon
+    private fun toggleShortcut(messageEntity: MessageEntity, create: Boolean) {
         val shortCutInt = Intent(activity.applicationContext, ShortcutHandlerActivity::class.java)
         shortCutInt.action = Intent.ACTION_MAIN
-        shortCutInt.data = ContentUris.withAppendedId(Uri.parse(Config.SMS_DATA_BASE_URI), smsItem!!.id)
+        shortCutInt.data = ContentUris.withAppendedId(Uri.parse(Config.SMS_DATA_BASE_URI), messageEntity.id!!)
 
         val addInt = Intent()
         addInt.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortCutInt)
-        addInt.putExtra(Intent.EXTRA_SHORTCUT_NAME, smsItem!!.title)
+        addInt.putExtra(Intent.EXTRA_SHORTCUT_NAME, messageEntity.title)
         addInt.putExtra("duplicate", false)
         addInt.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,
                 Intent.ShortcutIconResource.fromContext(activity.applicationContext,

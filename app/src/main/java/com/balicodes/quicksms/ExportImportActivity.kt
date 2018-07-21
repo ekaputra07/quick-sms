@@ -18,10 +18,11 @@
 package com.balicodes.quicksms
 
 import android.app.Activity
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Environment
 import android.support.v4.app.ActivityCompat
@@ -29,7 +30,11 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
+import com.balicodes.quicksms.entity.MessageEntity
+import com.balicodes.quicksms.viewmodel.MessageViewModel
 import kotlinx.android.synthetic.main.activity_export_import.*
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -38,9 +43,13 @@ import java.sql.Timestamp
 
 class ExportImportActivity : AppCompatActivity() {
 
+    private var viewModel: MessageViewModel? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_export_import)
+
+        viewModel = ViewModelProviders.of(this).get(MessageViewModel::class.java)
 
         btnExport.setOnClickListener {
             Log.d(javaClass.simpleName, "EXPORT")
@@ -48,11 +57,10 @@ class ExportImportActivity : AppCompatActivity() {
             // Android API 23+ requires this
             val permission = ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
             if (permission == PackageManager.PERMISSION_GRANTED) {
-                ExportTask().execute()
+                exportAsync()
             } else {
                 ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), Config.WRITE_STORAGE_PERMISSION_REQUEST)
             }
-
         }
 
         btnImport.setOnClickListener {
@@ -73,63 +81,102 @@ class ExportImportActivity : AppCompatActivity() {
                 && data != null
                 && data.data != null) {
             Log.d(javaClass.simpleName, data.dataString)
-            ImportTask().execute(data.data)
+            importAsync(data.data)
         }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == Config.WRITE_STORAGE_PERMISSION_REQUEST && grantResults.isNotEmpty()) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                ExportTask().execute()
+                exportAsync()
             } else {
                 Toast.makeText(this, getString(R.string.permission_export_denied), Toast.LENGTH_LONG).show()
             }
         }
     }
 
+    private fun exportAsync() {
+        btnExport.text = getString(R.string.exporting)
+
+        viewModel!!.setOrderBy("id")
+        viewModel!!.getMessages().observe(this, Observer {
+
+            doAsync {
+                val success = export(it)
+                uiThread {
+                    if (success) {
+                        Toast.makeText(it, getString(R.string.export_success), Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(it, getString(R.string.export_error), Toast.LENGTH_SHORT).show()
+                    }
+                    btnExport.text = getString(R.string.export)
+                }
+            }
+
+        })
+    }
+
     /**
      * http://androidtechnicalblog.blogspot.co.id/2014/01/exporting-sqlite-database-into-csv.html
      */
-    private fun export(): Boolean {
-        /**First of all we check if the external storage of the device is available for writing.
-         * Remember that the external storage is not necessarily the sd card. Very often it is
-         * the device storage.
-         */
-        val state: String = Environment.getExternalStorageState()
-        if (Environment.MEDIA_MOUNTED != state) {
-            return false
-        } else {
-            //We use the Download directory for saving our .csv file.
-            val exportDir: File = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            if (!exportDir.exists()) {
-                exportDir.mkdirs()
-            }
-
-            val file: File? = File(exportDir, "QuickSMS-${Timestamp(System.currentTimeMillis())}.csv")
-            var printWriter: PrintWriter? = null
-
-            try {
-                file!!.createNewFile()
-                printWriter = PrintWriter(FileWriter(file))
-
-                //val dbHelper = DBHelper(this)
-                //val smsItems = dbHelper.all()
-                val smsItems = ArrayList<SMSItem>()
-                for (item in smsItems) {
-                    val row = "${item.id}|${item.title}|${item.number}|${item.message}"
-                    Log.d(javaClass.simpleName, row)
-                    printWriter.println(row)
-                }
-
-            } catch (e: Exception) {
-                e.printStackTrace()
+    private fun export(list: List<MessageEntity>?): Boolean {
+        list?.let {
+            /**First of all we check if the external storage of the device is available for writing.
+             * Remember that the external storage is not necessarily the sd card. Very often it is
+             * the device storage.
+             */
+            val state: String = Environment.getExternalStorageState()
+            if (Environment.MEDIA_MOUNTED != state) {
                 return false
-            } finally {
-                if (printWriter != null) {
-                    printWriter.close()
+            } else {
+                //We use the Download directory for saving our .csv file.
+                val exportDir: File = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                if (!exportDir.exists()) {
+                    exportDir.mkdirs()
                 }
+
+                val file: File? = File(exportDir, "QuickSMS-${Timestamp(System.currentTimeMillis())}.csv")
+                var printWriter: PrintWriter? = null
+
+                try {
+                    file!!.createNewFile()
+                    printWriter = PrintWriter(FileWriter(file))
+
+                    for (item in it) {
+                        val row = "${item.id}|${item.title}|${item.number}|${item.message}"
+                        Log.d(javaClass.simpleName, row)
+                        printWriter.println(row)
+                    }
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    return false
+                } finally {
+                    if (printWriter != null) {
+                        printWriter.close()
+                    }
+                }
+                return true
             }
-            return true
+        }
+
+        return false
+    }
+
+    private fun importAsync(uri: Uri?) {
+        btnImport.text = getString(R.string.importing)
+
+        doAsync {
+            val result = import(uri)
+
+            uiThread {
+                if (result == "success") {
+                    Toast.makeText(it, getString(R.string.import_success), Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(it, result, Toast.LENGTH_LONG).show()
+                }
+                btnImport.text = getString(R.string.import_str)
+            }
         }
     }
 
@@ -137,11 +184,17 @@ class ExportImportActivity : AppCompatActivity() {
         try {
             val csvReader = CSVReader(this, uri)
             val messages: List<Array<String>> = csvReader.readCSV()
+            val entities = arrayListOf<MessageEntity>()
 
             // write to DB
-            for (message in messages) {
-                //SMSItem.create(this, message[1], message[2], message[3], "NO")
+            for (index in messages.indices) {
+                val m = messages[index]
+                val e = MessageEntity(null, m[1], m[2], m[3], SMSItem.SHORTCUT_NO)
+                entities.add(index, e)
             }
+
+            viewModel!!.insertMessages(*entities.toTypedArray())
+
         } catch (io: IOException) {
             io.printStackTrace()
             return getString(R.string.import_error_io)
@@ -150,43 +203,5 @@ class ExportImportActivity : AppCompatActivity() {
             return getString(R.string.import_error_format)
         }
         return "success"
-    }
-
-    inner class ExportTask : AsyncTask<Void, Void, Boolean>() {
-        override fun onPreExecute() {
-            btnExport.text = getString(R.string.exporting)
-        }
-
-        override fun doInBackground(vararg p0: Void?): Boolean {
-            return export()
-        }
-
-        override fun onPostExecute(result: Boolean?) {
-            if (result == true) {
-                Toast.makeText(this@ExportImportActivity, getString(R.string.export_success), Toast.LENGTH_LONG).show()
-            } else {
-                Toast.makeText(this@ExportImportActivity, getString(R.string.export_error), Toast.LENGTH_SHORT).show()
-            }
-            btnExport.text = getString(R.string.export)
-        }
-    }
-
-    inner class ImportTask : AsyncTask<Uri, Void, String>() {
-        override fun onPreExecute() {
-            btnImport.text = getString(R.string.importing)
-        }
-
-        override fun doInBackground(vararg uri: Uri?): String {
-            return import(uri[0])
-        }
-
-        override fun onPostExecute(result: String?) {
-            if (result == "success") {
-                Toast.makeText(this@ExportImportActivity, getString(R.string.import_success), Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this@ExportImportActivity, result, Toast.LENGTH_LONG).show()
-            }
-            btnImport.text = getString(R.string.import_str)
-        }
     }
 }

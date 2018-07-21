@@ -111,6 +111,8 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
 
         when (id) {
             R.id.action_new -> {
+                viewModel!!.selectMessage(null)
+
                 val ft = activity.supportFragmentManager.beginTransaction()
                 ft.replace(R.id.container, SMSFormFragment())
                 ft.addToBackStack(null)
