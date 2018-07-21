@@ -67,14 +67,14 @@ internal class RecipientListAdapter(private val fragment: SMSFormFragment, priva
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var convertView = convertView
         if (convertView == null) {
-            val inflater = fragment.activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val inflater = fragment.activity!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             convertView = inflater.inflate(R.layout.receiver_list_item, parent, false)
         }
         // Remove item button
         val removeNumberBtn = convertView!!.findViewById<ImageButton>(R.id.removeNumberBtn)
         removeNumberBtn.setOnClickListener(View.OnClickListener {
             if (count == 1) {
-                Toast.makeText(fragment.activity, R.string.number_error, Toast.LENGTH_LONG).show()
+                Toast.makeText(fragment.activity!!, R.string.number_error, Toast.LENGTH_LONG).show()
                 return@OnClickListener
             }
             removeItem(position)

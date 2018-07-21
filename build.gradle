@@ -11,6 +11,7 @@ buildscript {
         kotlin_version = '1.2.51'
         room_version = '1.1.1'
         archLifecycleVersion = '1.1.1'
+        supportLibraryVersion = '27.1.1'
     }
 
     dependencies {
