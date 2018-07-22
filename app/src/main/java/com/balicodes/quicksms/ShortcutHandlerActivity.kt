@@ -25,6 +25,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import com.balicodes.quicksms.service.SendingService
 import com.balicodes.quicksms.viewmodel.MessageViewModel
 
 class ShortcutHandlerActivity : AppCompatActivity() {

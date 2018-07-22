@@ -20,7 +20,7 @@ package com.balicodes.quicksms.entity
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
-import com.balicodes.quicksms.SMSItem
+import com.balicodes.quicksms.model.SMSItem
 
 @Entity(tableName = MessageEntity.TABLE_NAME)
 class MessageEntity(@PrimaryKey(autoGenerate = true) var id: Long?,

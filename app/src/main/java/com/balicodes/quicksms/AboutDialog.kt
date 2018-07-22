@@ -24,7 +24,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 
-class AboutDialog constructor(val context: Context) {
+class AboutDialog(val context: Context) {
     private val builder: AlertDialog.Builder = AlertDialog.Builder(context)
     var rateListener: View.OnClickListener? = null
     var shareListener: View.OnClickListener? = null
@@ -43,12 +43,14 @@ class AboutDialog constructor(val context: Context) {
         about.text = aboutTxt
 
         val btnRate: Button = messageView.findViewById(R.id.btnRate)
-        if (rateListener != null)
+        rateListener?.let {
             btnRate.setOnClickListener(rateListener)
+        }
 
         val btnShare: Button = messageView.findViewById(R.id.btnShare)
-        if (shareListener != null)
+        shareListener?.let {
             btnShare.setOnClickListener(shareListener)
+        }
 
         builder.setIcon(R.drawable.ic_launcher_small)
         builder.setTitle(R.string.app_name)

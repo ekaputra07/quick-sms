@@ -38,6 +38,9 @@ import android.widget.AdapterView
 import android.widget.FrameLayout
 import android.widget.ListView
 import com.balicodes.quicksms.entity.MessageEntity
+import com.balicodes.quicksms.model.Recipient
+import com.balicodes.quicksms.model.SMSItem
+import com.balicodes.quicksms.service.SendingService
 import com.balicodes.quicksms.viewmodel.MessageViewModel
 import java.util.*
 

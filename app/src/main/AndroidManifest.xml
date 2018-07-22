@@ -57,7 +57,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".SendingService" />
+        <service android:name=".service.SendingService" />
 
         <!--<receiver android:name=".SMSStatusBroadcastReceiver">-->
         <!--<intent-filter>-->

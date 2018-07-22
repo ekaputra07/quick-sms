@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.balicodes.quicksms
+package com.balicodes.quicksms.model
 
 import android.os.Bundle
 import android.os.Parcel
@@ -56,6 +56,6 @@ data class Recipient(var id: Long, var name: String, var number: String) : Parce
             override fun newArray(size: Int): Array<Recipient?> = newArray(size)
         }
 
-        @JvmStatic fun fromBundle(bundle: Bundle) =  Recipient(bundle.getLong("id"), bundle.getString("name"), bundle.getString("number"))
+        @JvmStatic fun fromBundle(bundle: Bundle) = Recipient(bundle.getLong("id"), bundle.getString("name"), bundle.getString("number"))
     }
 }

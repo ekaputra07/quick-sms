@@ -36,6 +36,7 @@ import android.widget.ImageView
 import android.widget.ListView
 import android.widget.ProgressBar
 import android.widget.TextView
+import com.balicodes.quicksms.model.Recipient
 
 import java.util.ArrayList
 

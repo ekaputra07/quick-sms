@@ -15,13 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.balicodes.quicksms
+package com.balicodes.quicksms.service
 
 import android.app.IntentService
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
+import com.balicodes.quicksms.Config
+import com.balicodes.quicksms.R
+import com.balicodes.quicksms.model.SMSItem
 import java.lang.Exception
 
 class SendingService : IntentService("SendingService") {

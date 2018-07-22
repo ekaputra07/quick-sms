@@ -18,7 +18,6 @@
 package com.balicodes.quicksms
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +25,8 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.RelativeLayout
 import android.widget.TextView
+import com.balicodes.quicksms.model.Recipient
+import com.balicodes.quicksms.model.SMSItem
 
 internal class SMSListAdapter(private val context: Context, private val items: List<SMSItem>) : BaseAdapter() {
 

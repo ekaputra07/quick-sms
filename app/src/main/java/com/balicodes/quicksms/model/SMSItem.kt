@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.balicodes.quicksms
+package com.balicodes.quicksms.model
 
 import android.app.PendingIntent
 import android.content.Context
@@ -25,6 +25,7 @@ import android.os.Parcelable
 import android.telephony.SmsManager
 import android.text.TextUtils
 import android.util.Log
+import com.balicodes.quicksms.Config
 import com.balicodes.quicksms.entity.MessageEntity
 
 import java.util.ArrayList
@@ -42,7 +43,7 @@ class SMSItem(val id: Long, val title: String, val number: String, val message: 
     val label: String
         get() {
             val recipientString = ArrayList<String>()
-            val rec = SMSItem.parseReceiverCSV(number)
+            val rec = parseReceiverCSV(number)
             for (r in rec) {
                 if (r[0].isEmpty()) {
                     recipientString.add(r[1])
@@ -78,7 +79,7 @@ class SMSItem(val id: Long, val title: String, val number: String, val message: 
     }
 
     fun totalRecipients(): Int {
-        return SMSItem.parseReceiverCSV(number).size
+        return parseReceiverCSV(number).size
     }
 
     fun toBundle(): Bundle {
@@ -100,7 +101,7 @@ class SMSItem(val id: Long, val title: String, val number: String, val message: 
 
         Log.d("SMSItem", "====> Delivery report: " + enableDeliveryReport!!)
 
-        val recipients = SMSItem.parseReceiverCSV(this.number)
+        val recipients = parseReceiverCSV(this.number)
 
         var requestCode = 0
 

@@ -37,6 +37,7 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import com.balicodes.quicksms.entity.MessageEntity
+import com.balicodes.quicksms.model.SMSItem
 import com.balicodes.quicksms.viewmodel.MessageViewModel
 
 class SMSFormFragment : Fragment() {
@@ -309,7 +310,7 @@ class SMSFormFragment : Fragment() {
             addInt.putExtra("duplicate", false)
             addInt.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,
                     Intent.ShortcutIconResource.fromContext(requireActivity().applicationContext,
-                            R.drawable.ic_launcher))
+                            R.drawable.ic_launcher_shortcut))
             if (create) {
                 addInt.action = "com.android.launcher.action.INSTALL_SHORTCUT"
             } else {
