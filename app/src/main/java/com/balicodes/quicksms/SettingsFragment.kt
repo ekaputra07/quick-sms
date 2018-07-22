@@ -21,12 +21,9 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceFragment
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 
 class SettingsFragment : PreferenceFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
-    private var sp: SharedPreferences? = null
+    private lateinit var sp: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,10 +33,6 @@ class SettingsFragment : PreferenceFragment(), SharedPreferences.OnSharedPrefere
 
         // set settings summary
         setSortByPrefSummary()
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
@@ -52,12 +45,12 @@ class SettingsFragment : PreferenceFragment(), SharedPreferences.OnSharedPrefere
 
     override fun onResume() {
         super.onResume()
-        preferenceScreen.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        sp.registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun onPause() {
         super.onPause()
-        preferenceScreen.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        sp.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     private fun setSortByPrefSummary() {
@@ -67,7 +60,7 @@ class SettingsFragment : PreferenceFragment(), SharedPreferences.OnSharedPrefere
         val names = resources.getStringArray(R.array.pref_sort_order_names_array)
         val values = resources.getStringArray(R.array.pref_sort_order_values_array)
 
-        val value = sp!!.getString(key, getString(R.string.pref_sort_by_default_value))
+        val value = sp.getString(key, getString(R.string.pref_sort_by_default_value))
         val index = java.util.Arrays.asList(*values).indexOf(value)
 
         if (index != -1)

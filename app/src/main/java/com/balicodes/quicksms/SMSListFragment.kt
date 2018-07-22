@@ -22,11 +22,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.content.SharedPreferences
+import android.content.*
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.os.Build
@@ -37,56 +33,50 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
 import android.support.v4.content.ContextCompat
 import android.util.Log
-import android.view.ContextMenu
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.AdapterView
 import android.widget.FrameLayout
 import android.widget.ListView
 import com.balicodes.quicksms.entity.MessageEntity
 import com.balicodes.quicksms.viewmodel.MessageViewModel
-
-import java.util.ArrayList
+import java.util.*
 
 class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
 
     private val TAG = SMSListFragment::class.java.toString()
 
-    lateinit var viewModel: MessageViewModel
+    private lateinit var viewModel: MessageViewModel
+    private lateinit var tapInfo: FrameLayout
+    private lateinit var beep: MediaPlayer
+    private lateinit var sentReceiver: SentReceiver
+    private lateinit var deliveryReceiver: DeliveryReceiver
+    private lateinit var sp: SharedPreferences
+
     private val listSMS = ArrayList<SMSItem>()
     private var listAdapter: SMSListAdapter? = null
-    private var tapInfo: FrameLayout? = null
     private var afterSending = false
-    private var beep: MediaPlayer? = null
-    private var sentReceiver: SentReceiver? = null
-    private var deliveryReceiver: DeliveryReceiver? = null
     private var isReceiverRegistered = false
     private var currentSMSitem: SMSItem? = null
     private var currentSMSitemIndex: Int = 0
     private var currentSendingCount = 0
-    private var sp: SharedPreferences? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
-        val sp = PreferenceManager.getDefaultSharedPreferences(activity)
-        val sortBy = sp.getString(activity!!.getString(R.string.pref_sort_by_key), activity?.getString(R.string.pref_sort_by_default_value))
+        val sp = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val sortBy = sp.getString(requireContext().getString(R.string.pref_sort_by_key), requireContext().getString(R.string.pref_sort_by_default_value))
 
-        viewModel = ViewModelProviders.of(activity!!).get(MessageViewModel::class.java)
+        viewModel = ViewModelProviders.of(requireActivity()).get(MessageViewModel::class.java)
         viewModel.setOrderBy(sortBy)
         viewModel.getMessages().observe(this, Observer<List<MessageEntity>> {
             listSMS.clear()
 
             // show hide tap info frame.
             if (it!!.isEmpty()) {
-                tapInfo!!.visibility = View.GONE
+                tapInfo.visibility = View.GONE
             } else {
-                tapInfo!!.visibility = View.VISIBLE
+                tapInfo.visibility = View.VISIBLE
             }
 
             val items = ArrayList<SMSItem>()
@@ -98,7 +88,7 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
 
         listAdapter = SMSListAdapter(activity!!, listSMS)
         beep = MediaPlayer.create(activity, R.raw.beep)
-        beep!!.setVolume(0.5.toFloat(), 0.5.toFloat())
+        beep.setVolume(0.5.toFloat(), 0.5.toFloat())
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -113,7 +103,7 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
             R.id.action_new -> {
                 viewModel.selectMessage(null)
 
-                val ft = activity!!.supportFragmentManager.beginTransaction()
+                val ft = requireActivity().supportFragmentManager.beginTransaction()
                 ft.replace(R.id.container, SMSFormFragment())
                 ft.addToBackStack(null)
                 ft.commit()
@@ -146,7 +136,7 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
         viewModel.selectMessage(item.toEntity())
 
         val form = SMSFormFragment()
-        activity!!.supportFragmentManager
+        requireActivity().supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.container, form)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
@@ -182,8 +172,8 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
         sentReceiver = SentReceiver()
         deliveryReceiver = DeliveryReceiver()
 
-        activity!!.registerReceiver(sentReceiver, IntentFilter(Config.SENT_STATUS_ACTION))
-        activity!!.registerReceiver(deliveryReceiver, IntentFilter(Config.DELIVERY_STATUS_ACTION))
+        requireActivity().registerReceiver(sentReceiver, IntentFilter(Config.SENT_STATUS_ACTION))
+        requireActivity().registerReceiver(deliveryReceiver, IntentFilter(Config.DELIVERY_STATUS_ACTION))
 
         isReceiverRegistered = true
         Log.d(TAG, "Sent and Delivery receivers registered.")
@@ -195,8 +185,8 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
     private fun unregisterReceivers() {
         try {
             if (isReceiverRegistered) {
-                activity?.unregisterReceiver(sentReceiver)
-                activity?.unregisterReceiver(deliveryReceiver)
+                requireActivity().unregisterReceiver(sentReceiver)
+                requireActivity().unregisterReceiver(deliveryReceiver)
                 Log.d(TAG, "Sent and Delivery receivers un-registered.")
             }
         } catch (e: Exception) {
@@ -210,11 +200,11 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
     ----------------------------------------------------------------------------------------------*/
     private fun tryToSend() {
         afterSending = true
-        val confirm = sp!!.getBoolean(getString(R.string.pref_sending_confirmation_key), false)
+        val confirm = sp.getBoolean(getString(R.string.pref_sending_confirmation_key), false)
 
         // If sending confirmation required.
         if (confirm) {
-            val builder = AlertDialog.Builder(activity)
+            val builder = AlertDialog.Builder(requireContext())
             builder.setTitle(R.string.confirm_sending)
 
             builder.setPositiveButton(R.string.yes) { dialog, id -> sendSMS() }
@@ -236,36 +226,36 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
         // Android API 23+ requires this
         // There's a bug on API 26 which requires READ_PHONE_STATE to be able to send SMS.
         if (Build.VERSION.SDK_INT == 26) {
-            val permissionSendSMS = ContextCompat.checkSelfPermission(activity!!, android.Manifest.permission.SEND_SMS)
-            val permissionReadPhoneState = ContextCompat.checkSelfPermission(activity!!, Manifest.permission.READ_PHONE_STATE)
+            val permissionSendSMS = ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.SEND_SMS)
+            val permissionReadPhoneState = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_PHONE_STATE)
 
             if (permissionSendSMS != PackageManager.PERMISSION_GRANTED || permissionReadPhoneState != PackageManager.PERMISSION_GRANTED) {
                 val perms = arrayOf(Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE)
-                ActivityCompat.requestPermissions(activity!!, perms, Config.SEND_SMS_PERMISSION_REQUEST)
+                ActivityCompat.requestPermissions(requireActivity(), perms, Config.SEND_SMS_PERMISSION_REQUEST)
                 return
             }
         } else {
-            val permission = ContextCompat.checkSelfPermission(activity!!, android.Manifest.permission.SEND_SMS)
+            val permission = ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.SEND_SMS)
             if (permission != PackageManager.PERMISSION_GRANTED) {
                 val perms = arrayOf(Manifest.permission.SEND_SMS)
-                ActivityCompat.requestPermissions(activity!!, perms, Config.SEND_SMS_PERMISSION_REQUEST)
+                ActivityCompat.requestPermissions(requireActivity(), perms, Config.SEND_SMS_PERMISSION_REQUEST)
                 return
             }
         }
 
         Log.d(TAG, "Sending sms: " + currentSMSitem!!.title)
         listAdapter!!.setSending(currentSMSitemIndex)
-        val playBeep = sp!!.getBoolean(getString(R.string.pref_enable_beep_key), true)
-        if (playBeep) beep!!.start()
+        val playBeep = sp.getBoolean(getString(R.string.pref_enable_beep_key), true)
+        if (playBeep) beep.start()
 
         // start our sending service
-        val sendingIntent = Intent(activity?.applicationContext, SendingService::class.java)
+        val sendingIntent = Intent(requireContext(), SendingService::class.java)
         sendingIntent.putExtra(Config.SMS_BUNDLE_EXTRA_KEY, currentSMSitem!!.toBundle())
-        activity?.startService(sendingIntent)
+        requireActivity().startService(sendingIntent)
     }
 
     private fun resendSingleRecipient() {
-        val builder = AlertDialog.Builder(activity)
+        val builder = AlertDialog.Builder(requireContext())
         builder.setTitle(R.string.sending_failed)
         builder.setMessage(R.string.sending_failed_info)
         builder.setPositiveButton(R.string.retry) { dialog, id ->
@@ -284,7 +274,7 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
         override fun onReceive(context: Context, intent: Intent) {
 
             val recBundle = intent.getBundleExtra(Config.RECIPIENT_EXTRA_KEY)
-            val confirmSending = sp!!.getBoolean(getString(R.string.pref_sending_confirmation_key), false)
+            val confirmSending = sp.getBoolean(getString(R.string.pref_sending_confirmation_key), false)
 
             if (resultCode == Activity.RESULT_OK) {
                 if (recBundle != null) {
@@ -319,7 +309,7 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
                             afterSending = false
                         }
 
-                        val resendIntent = Intent(activity?.applicationContext, ResendActivity::class.java)
+                        val resendIntent = Intent(requireContext(), ResendActivity::class.java)
                         resendIntent.putExtra(Config.SMS_MESSAGE_EXTRA_KEY, currentSMSitem!!.message)
                         resendIntent.putParcelableArrayListExtra(Config.RECIPIENT_PARCELS_EXTRA_KEY, currentSMSitem!!.failedInfoList)
                         startActivity(resendIntent)
@@ -366,7 +356,7 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
     override fun onResume() {
         super.onResume()
         registerReceivers()
-        sp = PreferenceManager.getDefaultSharedPreferences(activity)
+        sp = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
     }
 }

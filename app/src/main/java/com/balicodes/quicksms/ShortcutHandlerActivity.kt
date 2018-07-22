@@ -17,19 +17,24 @@
 
 package com.balicodes.quicksms
 
-import android.app.Activity
 import android.app.AlertDialog
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.ContentUris
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import com.balicodes.quicksms.viewmodel.MessageViewModel
 
-class ShortcutHandlerActivity : Activity() {
-    private val currentSendingCount = 0
-    private var smsItem: SMSItem? = null
+class ShortcutHandlerActivity : AppCompatActivity() {
+
+    private lateinit var viewModel: MessageViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        viewModel = ViewModelProviders.of(this).get(MessageViewModel::class.java)
 
         val uri = intent.data
         val smsID = ContentUris.parseId(uri)
@@ -37,27 +42,26 @@ class ShortcutHandlerActivity : Activity() {
         Log.d(this.localClassName.toString(), smsID.toString())
 
         if (smsID != 0L) {
-            val dbHelper = DBHelper(this)
-            smsItem = dbHelper.get(smsID)
-            dbHelper.close()
+            viewModel.getMessage(smsID).observe(this, Observer {
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle(R.string.confirm_sending)
 
-            val builder = AlertDialog.Builder(this)
-            builder.setTitle(R.string.confirm_sending)
-
-            builder.setPositiveButton(R.string.yes) { dialog, id ->
-                if (smsItem != null) {
-                    // Sent via sending service
-                    val intent = Intent(this@ShortcutHandlerActivity, SendingService::class.java)
-                    intent.putExtra(Config.SMS_BUNDLE_EXTRA_KEY, smsItem!!.toBundle())
-
-                    startService(intent)
+                builder.setPositiveButton(R.string.yes) { _, _ ->
+                    it?.let {
+                        // Sent via sending service
+                        val intent = Intent(this, SendingService::class.java)
+                        intent.putExtra(Config.SMS_BUNDLE_EXTRA_KEY, it.toSmsItem().toBundle())
+                        this.startService(intent)
+                    }
+                    finish()
                 }
-                finish()
-            }
-            builder.setNegativeButton(R.string.no) { dialog, id -> finish() }
-            val dialog = builder.create()
-            dialog.show()
-        } else {
+
+                builder.setNegativeButton(R.string.no) { _, _ -> finish() }
+                builder.setOnCancelListener { finish() }
+                val dialog = builder.create()
+                dialog.show()
+            })
+        }else{
             finish()
         }
     }

@@ -43,7 +43,7 @@ import java.sql.Timestamp
 
 class ExportImportActivity : AppCompatActivity() {
 
-    private var viewModel: MessageViewModel? = null
+    private lateinit var viewModel: MessageViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,8 +98,8 @@ class ExportImportActivity : AppCompatActivity() {
     private fun exportAsync() {
         btnExport.text = getString(R.string.exporting)
 
-        viewModel!!.setOrderBy("id")
-        viewModel!!.getMessages().observe(this, Observer {
+        viewModel.setOrderBy("id")
+        viewModel.getMessages().observe(this, Observer {
 
             doAsync {
                 val success = export(it)
@@ -193,7 +193,7 @@ class ExportImportActivity : AppCompatActivity() {
                 entities.add(index, e)
             }
 
-            viewModel!!.insertMessages(*entities.toTypedArray())
+            viewModel.insertMessages(*entities.toTypedArray())
 
         } catch (io: IOException) {
             io.printStackTrace()

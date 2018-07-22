@@ -38,6 +38,7 @@ class MessageViewModel(val app: Application) : AndroidViewModel(app) {
 
     //-- provide access to repository
 
+    fun getMessage(id: Long): LiveData<MessageEntity> = messageRepository.getMessage(id)
     fun insertMessages(vararg messages: MessageEntity) = messageRepository.insertMessages(*messages)
     fun insertMessage(message: MessageEntity, listener: (MessageEntity) -> Unit) = messageRepository.insertMessage(message, listener)
     fun updateMessage(message: MessageEntity, listener: (MessageEntity) -> Unit) = messageRepository.updateMessage(message, listener)
