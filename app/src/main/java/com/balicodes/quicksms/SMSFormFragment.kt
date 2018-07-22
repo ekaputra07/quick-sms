@@ -19,6 +19,7 @@ package com.balicodes.quicksms
 
 import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
+import android.app.PendingIntent
 import android.arch.lifecycle.ViewModelProviders
 import android.content.ContentUris
 import android.content.Context
@@ -281,26 +282,68 @@ class SMSFormFragment : Fragment() {
     }
 
     // Toogle shortcut icon
+    // TODO: Move this code block into its own class.
     private fun toggleShortcut(messageEntity: MessageEntity, create: Boolean) {
 
         val shortCutInt = Intent(requireContext(), ShortcutHandlerActivity::class.java)
         shortCutInt.action = Intent.ACTION_MAIN
         shortCutInt.data = ContentUris.withAppendedId(Uri.parse(Config.SMS_DATA_BASE_URI), messageEntity.id!!)
 
+        // On Android 25+ we can create dynamic shortcuts
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             val shortcutManager = requireContext().getSystemService(ShortcutManager::class.java)
+            val shortcutId = "QSMS_".format(messageEntity.id)
 
-            if (create) {
-                val shortcutInfo = ShortcutInfo.Builder(requireActivity(), "QSMS_".format(messageEntity.id))
-                        .setShortLabel(messageEntity.title)
-                        .setLongLabel(messageEntity.message)
-                        .setIcon(Icon.createWithResource(requireActivity(), R.drawable.ic_launcher_small))
-                        .setIntent(shortCutInt)
-                        .build()
+            val shortcutInfo = ShortcutInfo.Builder(requireActivity(), shortcutId)
+                    .setShortLabel(messageEntity.title)
+                    .setIcon(Icon.createWithResource(requireActivity(), R.drawable.ic_launcher_shortcut))
+                    .setIntent(shortCutInt)
+                    .build()
 
-                shortcutManager?.addDynamicShortcuts(listOf(shortcutInfo))
+            // On Android 26+ we can create pinned shortcut on home screen.
+            // else, we only create dynamic shortcut.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && shortcutManager.isRequestPinShortcutSupported) {
+                val shortcuts = shortcutManager.pinnedShortcuts
+
+                var exists = false
+                loop@ for (s in shortcuts) {
+                    if (s.id == shortcutId) {
+                        exists = true
+                        break@loop
+                    }
+                }
+                if (create && !exists) {
+                    val pinnedShortcutCallbackIntent = shortcutManager.createShortcutResultIntent(shortcutInfo)
+                    val successCallback = PendingIntent.getBroadcast(requireContext(), 0, pinnedShortcutCallbackIntent, 0)
+                    shortcutManager.requestPinShortcut(shortcutInfo, successCallback.intentSender)
+                } else if (create && exists) {
+                    shortcutManager.updateShortcuts(listOf(shortcutInfo))
+                } else {
+                    val builder = AlertDialog.Builder(requireActivity())
+                    builder.setTitle("Deleting shortcut")
+                    builder.setMessage("Unfortunately Android doesn't allow us to delete the shortcut for you, so you have to delete it manually :)")
+                    builder.setPositiveButton(R.string.yes) { _, _ -> }
+                    val dialog = builder.create()
+                    dialog.show()
+                }
+
             } else {
-                shortcutManager?.removeDynamicShortcuts(listOf("QSMS_".format(messageEntity.id)))
+                val shortcuts = shortcutManager.dynamicShortcuts
+
+                var exists = false
+                loop@ for (s in shortcuts) {
+                    if (s.id == shortcutId) {
+                        exists = true
+                        break@loop
+                    }
+                }
+                if (create && !exists) {
+                    shortcutManager.addDynamicShortcuts(listOf(shortcutInfo))
+                } else if (create && exists) {
+                    shortcutManager.updateShortcuts(listOf(shortcutInfo))
+                } else {
+                    shortcutManager.removeDynamicShortcuts(listOf(shortcutId))
+                }
             }
 
         } else {
