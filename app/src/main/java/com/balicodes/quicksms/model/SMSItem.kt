@@ -21,24 +21,14 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcelable
 import android.telephony.SmsManager
 import android.text.TextUtils
-import android.util.Log
 import com.balicodes.quicksms.Config
 import com.balicodes.quicksms.entity.MessageEntity
-
-import java.util.ArrayList
+import java.util.*
+import java.util.logging.Logger
 
 class SMSItem(val id: Long, val title: String, val number: String, val message: String, val shortcut: String) {
-
-    var status: Int = STATUS_INACTIVE
-
-    // status stats of current sending, stored as Parcelable object of recipient.
-    // Why Parcelable? because we can easily sent it as Intent extras.
-    val sentInfoList = ArrayList<Parcelable>()
-    val failedInfoList = ArrayList<Parcelable>()
-    val receivedInfoList = ArrayList<Parcelable>()
 
     val label: String
         get() {
@@ -53,34 +43,6 @@ class SMSItem(val id: Long, val title: String, val number: String, val message: 
             }
             return TextUtils.join(", ", recipientString)
         }
-
-    fun setSending() {
-        // each time sending, clear current status.
-        sentInfoList.clear()
-        failedInfoList.clear()
-        receivedInfoList.clear()
-
-        status = STATUS_SENDING
-    }
-
-    fun addStatusInfo(statusType: Int, rec: Recipient) {
-        // the first time we get status from BroadCast receiver, set sending status to LISTENING
-        status = STATUS_LISTENING
-
-        when (statusType) {
-            STATUS_SENT -> this.sentInfoList.add(rec)
-            STATUS_FAILED -> this.failedInfoList.add(rec)
-            STATUS_DELIVERED -> this.receivedInfoList.add(rec)
-        }
-    }
-
-    fun hasId(): Boolean {
-        return id != 0L
-    }
-
-    fun totalRecipients(): Int {
-        return parseReceiverCSV(number).size
-    }
 
     fun toBundle(): Bundle {
         val bundle = Bundle()
@@ -99,7 +61,7 @@ class SMSItem(val id: Long, val title: String, val number: String, val message: 
     fun send(context: Context, enableDeliveryReport: Boolean?) {
         val smsManager = SmsManager.getDefault()
 
-        Log.d("SMSItem", "====> Delivery report: " + enableDeliveryReport!!)
+        LOG.info("SMSItem ====> Delivery report: " + enableDeliveryReport!!)
 
         val recipients = parseReceiverCSV(this.number)
 
@@ -111,7 +73,7 @@ class SMSItem(val id: Long, val title: String, val number: String, val message: 
             val rec = Recipient(id, recipient[0], recipient[1])
 
             try {
-                Log.d("SMSItem", "====> Sending to " + recipient[1])
+                LOG.info("SMSItem ====> Sending to " + recipient[1])
 
                 // Create sent pending Intent
                 val sentIntent = Intent(Config.SENT_STATUS_ACTION)
@@ -128,10 +90,10 @@ class SMSItem(val id: Long, val title: String, val number: String, val message: 
 
                 smsManager.sendTextMessage(recipient[1], null, this.message, sentPI, deliveryPI)
             } catch (e: SecurityException) {
-                Log.e("SMSItem", "====> [Security] Error sending to " + recipient[1])
-                Log.e("SMSItem", e.localizedMessage)
+                LOG.warning("SMSItem ====> [Security] Error sending to " + recipient[1])
+                LOG.warning(e.localizedMessage)
             } catch (e: Exception) {
-                Log.e("SMSItem", "====> Error sending to " + recipient[1])
+                LOG.warning("SMSItem ====> Error sending to " + recipient[1])
                 e.printStackTrace()
             }
 
@@ -140,16 +102,10 @@ class SMSItem(val id: Long, val title: String, val number: String, val message: 
     }
 
     companion object {
-        const val STATUS_INACTIVE = 0
-        const val STATUS_SENDING = 1
-        const val STATUS_LISTENING = 2
-
-        const val STATUS_SENT = 3
-        const val STATUS_DELIVERED = 4
-        const val STATUS_FAILED = 5
-
         const val SHORTCUT_YES = "YES"
         const val SHORTCUT_NO = "NO"
+
+        val LOG: Logger = Logger.getLogger(SMSItem::class.java.name)
 
         fun fromBundle(bundle: Bundle): SMSItem? {
             try {

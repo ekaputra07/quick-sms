@@ -17,7 +17,6 @@
 
 package com.balicodes.quicksms
 
-import android.app.NotificationManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -25,7 +24,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.NotificationCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
@@ -33,12 +31,16 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import com.balicodes.quicksms.util.Notification
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // create notification channel
+        Notification.createNotificationChannel(this)
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -77,32 +79,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + this.packageName)))
         }
 
-    }
-
-    /*----------------------------------------------------------------------------------------------
-    Return notification message builder instance.
-    --------------------------------------------------------------------------------------------- */
-    fun buildNotificationMessage(title: String, message: String): NotificationCompat.Builder {
-        //        Intent resultIntent = new Intent(this, MainActivity.class);
-        //        PendingIntent resultPendingIntent =
-        //                PendingIntent.getActivity(
-        //                        getActivity(),
-        //                        0,
-        //                        resultIntent,
-        //                        PendingIntent.FLAG_UPDATE_CURRENT
-        //                );
-        return NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setContentTitle(title)
-                .setContentText(message)
-    }
-
-    /*----------------------------------------------------------------------------------------------
-    Show notification.
-    --------------------------------------------------------------------------------------------- */
-    fun notify(notifID: Int, mBuilder: NotificationCompat.Builder) {
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(notifID, mBuilder.build())
     }
 
     /**

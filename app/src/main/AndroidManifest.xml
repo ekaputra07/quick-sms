@@ -59,12 +59,12 @@
 
         <service android:name=".service.SendingService" />
 
-        <!--<receiver android:name=".SMSStatusBroadcastReceiver">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="com.balicodes.quicksms.SENT_STATUS"/>-->
-        <!--<action android:name="com.balicodes.quicksms.DELIVERY_STATUS"/>-->
-        <!--</intent-filter>-->
-        <!--</receiver>-->
+        <receiver android:name=".SMSStatusBroadcastReceiver">
+            <intent-filter>
+                <action android:name="com.balicodes.quicksms.SENT_STATUS"/>
+                <action android:name="com.balicodes.quicksms.DELIVERY_STATUS"/>
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".ResendActivity"

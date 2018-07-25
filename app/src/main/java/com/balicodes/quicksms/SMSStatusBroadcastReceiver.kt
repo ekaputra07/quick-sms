@@ -17,29 +17,42 @@
 
 package com.balicodes.quicksms
 
+import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import com.balicodes.quicksms.model.Recipient
+import java.util.logging.Logger
 
 class SMSStatusBroadcastReceiver : BroadcastReceiver() {
 
-    private val TAG = javaClass.simpleName
+    companion object {
+        val LOG: Logger = Logger.getLogger(SMSStatusBroadcastReceiver::class.java.name)
+    }
 
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action
-        val bundle = intent.extras
+        val bundle = intent.getBundleExtra(Config.RECIPIENT_EXTRA_KEY)
 
-        if (bundle != null) {
-            val rec = bundle.get(Config.RECIPIENT_EXTRA_KEY) as Recipient
-
-            if (action == Config.SENT_STATUS_ACTION) {
-                Log.d(TAG, "====> SENT STATUS RECEIVED FOR " + rec.number)
+        if (resultCode == Activity.RESULT_OK) {
+            if (action == Config.SENT_STATUS_ACTION && bundle != null) {
+                val rec = Recipient.fromBundle(bundle)
+                LOG.info("SENT: " + rec.number)
             }
 
-            if (action == Config.DELIVERY_STATUS_ACTION) {
-                Log.d(TAG, "====> DELIVERY STATUS RECEIVED FOR " + rec.number)
+            if (action == Config.DELIVERY_STATUS_ACTION && bundle != null) {
+                val rec = Recipient.fromBundle(bundle)
+                LOG.info("DELIVERED: " + rec.number)
+            }
+        } else {
+            if (action == Config.SENT_STATUS_ACTION && bundle != null) {
+                val rec = Recipient.fromBundle(bundle)
+                LOG.info("NOT SENT: " + rec.number)
+            }
+
+            if (action == Config.DELIVERY_STATUS_ACTION && bundle != null) {
+                val rec = Recipient.fromBundle(bundle)
+                LOG.info("NOT DELIVERED: " + rec.number)
             }
         }
     }

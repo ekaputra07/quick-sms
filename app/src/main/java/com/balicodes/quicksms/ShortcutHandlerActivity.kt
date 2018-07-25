@@ -52,6 +52,9 @@ class ShortcutHandlerActivity : FragmentActivity() {
                 val builder = AlertDialog.Builder(this)
                 builder.setTitle(R.string.confirm_sending)
 
+                builder.setNegativeButton(R.string.no) { _, _ -> finish() }
+                builder.setOnCancelListener { finish() }
+
                 builder.setPositiveButton(R.string.yes) { _, _ ->
                     it?.let {
                         // Sent via sending service
@@ -62,12 +65,10 @@ class ShortcutHandlerActivity : FragmentActivity() {
                     finish()
                 }
 
-                builder.setNegativeButton(R.string.no) { _, _ -> finish() }
-                builder.setOnCancelListener { finish() }
                 val dialog = builder.create()
                 dialog.show()
             })
-        }else{
+        } else {
             finish()
         }
     }

@@ -18,13 +18,12 @@
 package com.balicodes.quicksms
 
 import android.Manifest
-import android.app.Activity
 import android.app.AlertDialog
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.content.*
+import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -38,7 +37,6 @@ import android.widget.AdapterView
 import android.widget.FrameLayout
 import android.widget.ListView
 import com.balicodes.quicksms.entity.MessageEntity
-import com.balicodes.quicksms.model.Recipient
 import com.balicodes.quicksms.model.SMSItem
 import com.balicodes.quicksms.service.SendingService
 import com.balicodes.quicksms.viewmodel.MessageViewModel
@@ -50,15 +48,11 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
 
     private lateinit var viewModel: MessageViewModel
     private lateinit var tapInfo: FrameLayout
-    private lateinit var beep: MediaPlayer
-    private lateinit var sentReceiver: SentReceiver
-    private lateinit var deliveryReceiver: DeliveryReceiver
     private lateinit var sp: SharedPreferences
 
     private val listSMS = ArrayList<SMSItem>()
     private var listAdapter: SMSListAdapter? = null
     private var afterSending = false
-    private var isReceiverRegistered = false
     private var currentSMSitem: SMSItem? = null
     private var currentSMSitemIndex: Int = 0
     private var currentSendingCount = 0
@@ -89,9 +83,7 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
             listAdapter!!.notifyDataSetChanged()
         })
 
-        listAdapter = SMSListAdapter(activity!!, listSMS)
-        beep = MediaPlayer.create(activity, R.raw.beep)
-        beep.setVolume(0.5.toFloat(), 0.5.toFloat())
+        listAdapter = SMSListAdapter(listSMS)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -149,7 +141,7 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        (activity as MainActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+        (requireActivity() as MainActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(false)
     }
 
     /*----------------------------------------------------------------------------------------------
@@ -166,36 +158,6 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
         currentSMSitemIndex = info.position
 
         tryToSend()
-    }
-
-    /*----------------------------------------------------------------------------------------------
-    Register sending and delivery receivers.
-    ----------------------------------------------------------------------------------------------*/
-    private fun registerReceivers() {
-        sentReceiver = SentReceiver()
-        deliveryReceiver = DeliveryReceiver()
-
-        requireActivity().registerReceiver(sentReceiver, IntentFilter(Config.SENT_STATUS_ACTION))
-        requireActivity().registerReceiver(deliveryReceiver, IntentFilter(Config.DELIVERY_STATUS_ACTION))
-
-        isReceiverRegistered = true
-        Log.d(TAG, "Sent and Delivery receivers registered.")
-    }
-
-    /*----------------------------------------------------------------------------------------------
-    Un-register sending and delivery receivers.
-    ----------------------------------------------------------------------------------------------*/
-    private fun unregisterReceivers() {
-        try {
-            if (isReceiverRegistered) {
-                requireActivity().unregisterReceiver(sentReceiver)
-                requireActivity().unregisterReceiver(deliveryReceiver)
-                Log.d(TAG, "Sent and Delivery receivers un-registered.")
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
     }
 
     /* ---------------------------------------------------------------------------------------------
@@ -246,11 +208,6 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
             }
         }
 
-        Log.d(TAG, "Sending sms: " + currentSMSitem!!.title)
-        listAdapter!!.setSending(currentSMSitemIndex)
-        val playBeep = sp.getBoolean(getString(R.string.pref_enable_beep_key), true)
-        if (playBeep) beep.start()
-
         // start our sending service
         val sendingIntent = Intent(requireContext(), SendingService::class.java)
         sendingIntent.putExtra(Config.SMS_BUNDLE_EXTRA_KEY, currentSMSitem!!.toBundle())
@@ -271,76 +228,6 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
     }
 
     /*----------------------------------------------------------------------------------------------
-    Private class to handle Sending status.
-    ----------------------------------------------------------------------------------------------*/
-    private inner class SentReceiver : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-
-            val recBundle = intent.getBundleExtra(Config.RECIPIENT_EXTRA_KEY)
-            val confirmSending = sp.getBoolean(getString(R.string.pref_sending_confirmation_key), false)
-
-            if (resultCode == Activity.RESULT_OK) {
-                if (recBundle != null) {
-                    val rec = Recipient.fromBundle(recBundle)
-                    listAdapter!!.notifyStatusChanged(currentSMSitemIndex, SMSItem.STATUS_SENT, rec)
-                    Log.d("SentReceiver", "====> OK: " + rec.number)
-                }
-            } else {
-                if (recBundle != null) {
-                    val rec = Recipient.fromBundle(recBundle)
-                    Log.d("SentReceiver", String.format("%s - %s - %s", rec.id, rec.name, rec.number))
-
-                    listAdapter!!.notifyStatusChanged(currentSMSitemIndex, SMSItem.STATUS_FAILED, rec)
-                    Log.d("SentReceiver", "====> FAILED: " + rec.number)
-                }
-            }
-
-            // If finish sending, check whether all sent successfully.
-            // if not, show resend screen with all failed recipients.
-            currentSendingCount++
-            if (currentSendingCount == currentSMSitem?.totalRecipients()) {
-
-                if (currentSMSitem!!.failedInfoList.size > 0) {
-                    afterSending = true
-
-                    // If the recipient only one, no need to show Resend screen
-                    if (currentSMSitem!!.totalRecipients() == 1) {
-                        resendSingleRecipient()
-                    } else {
-
-                        if (confirmSending) {
-                            afterSending = false
-                        }
-
-                        val resendIntent = Intent(requireContext(), ResendActivity::class.java)
-                        resendIntent.putExtra(Config.SMS_MESSAGE_EXTRA_KEY, currentSMSitem!!.message)
-                        resendIntent.putParcelableArrayListExtra(Config.RECIPIENT_PARCELS_EXTRA_KEY, currentSMSitem!!.failedInfoList)
-                        startActivity(resendIntent)
-                    }
-                }
-            }
-        }
-    }
-
-    /*----------------------------------------------------------------------------------------------
-    Private class to handle Delivery status.
-    ----------------------------------------------------------------------------------------------*/
-    private inner class DeliveryReceiver : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-
-            val recBundle = intent.getBundleExtra(Config.RECIPIENT_EXTRA_KEY)
-
-            if (resultCode == Activity.RESULT_OK) {
-                if (recBundle != null) {
-                    val rec = Recipient.fromBundle(recBundle)
-                    listAdapter!!.notifyStatusChanged(currentSMSitemIndex, SMSItem.STATUS_DELIVERED, rec)
-                    Log.d("DeliveryReceiver", "====> OK: " + rec.number)
-                }
-            }
-        }
-    }
-
-    /*----------------------------------------------------------------------------------------------
     Reset current selected SMSItem state.
     ----------------------------------------------------------------------------------------------*/
     private fun resetCurrentSMSItem() {
@@ -351,15 +238,8 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
         Log.d(TAG, "Reset currentSMSItem")
     }
 
-    override fun onPause() {
-        super.onPause()
-        unregisterReceivers()
-    }
-
     override fun onResume() {
         super.onResume()
-        registerReceivers()
         sp = PreferenceManager.getDefaultSharedPreferences(requireContext())
-
     }
 }

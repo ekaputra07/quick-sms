@@ -18,39 +18,56 @@
 package com.balicodes.quicksms.service
 
 import android.app.IntentService
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.os.Bundle
+import android.media.MediaPlayer
 import android.preference.PreferenceManager
-import android.util.Log
 import com.balicodes.quicksms.Config
 import com.balicodes.quicksms.R
 import com.balicodes.quicksms.model.SMSItem
 import com.balicodes.quicksms.repository.MessageRepository
-import com.balicodes.quicksms.viewmodel.MessageViewModel
+import com.balicodes.quicksms.util.Notification
 import java.lang.Exception
+import java.util.logging.Logger
 
 class SendingService : IntentService("SendingService") {
 
-    private val TAG = javaClass.simpleName
     lateinit var messageRepository: MessageRepository
+    lateinit var beep: MediaPlayer
+
+    companion object {
+        val LOG: Logger = Logger.getLogger(SendingService::class.java.name)
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        messageRepository = MessageRepository(application)
+
+        beep = MediaPlayer.create(this, R.raw.beep)
+        beep.setVolume(0.5.toFloat(), 0.5.toFloat())
+        beep.setOnCompletionListener { beep.release() }
+    }
 
     override fun onHandleIntent(intent: Intent) {
-
-        //messageRepository = MessageRepository(this.application)
-
         try {
-            Log.d(TAG, "====> Start sending")
-            val bundle: Bundle? = intent.getBundleExtra(Config.SMS_BUNDLE_EXTRA_KEY)
+            LOG.info("====> Start sending")
 
-            if (bundle != null) {
+            val bundle = intent.getBundleExtra(Config.SMS_BUNDLE_EXTRA_KEY)
+
+            bundle?.let {
                 val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
                 val enableDeliveryReport = sp.getBoolean(getString(R.string.pref_enable_delivery_report_key), false)
 
+                val playBeep = sp.getBoolean(getString(R.string.pref_enable_beep_key), true)
+                if (playBeep) beep.start()
+
                 val item = SMSItem.fromBundle(bundle)
                 item?.send(applicationContext, enableDeliveryReport)
+                LOG.info("====> Finished sending")
+
+                // Show notification
+                Notification.show(this, 1, "Sending \"" + item?.title + "\"...", "Success 0, Failed 1 of 1 recipients", Notification.getContentIntentMain(this))
+
             }
-            Log.d(TAG, "====> Finished sending")
         } catch (e: Exception) {
             e.printStackTrace()
         }

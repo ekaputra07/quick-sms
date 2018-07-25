@@ -18,29 +18,14 @@
 package com.balicodes.quicksms
 
 import android.content.Context
-import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.RelativeLayout
 import android.widget.TextView
-import com.balicodes.quicksms.model.Recipient
 import com.balicodes.quicksms.model.SMSItem
 
-internal class SMSListAdapter(private val context: Context, private val items: List<SMSItem>) : BaseAdapter() {
-
-    private val sp = PreferenceManager.getDefaultSharedPreferences(context)
-
-    fun setSending(position: Int) {
-        items[position].setSending()
-        notifyDataSetChanged()
-    }
-
-    fun notifyStatusChanged(position: Int, statusType: Int, rec: Recipient) {
-        items[position].addStatusInfo(statusType, rec)
-        notifyDataSetChanged()
-    }
+internal class SMSListAdapter(private val items: List<SMSItem>) : BaseAdapter() {
 
     override fun getCount(): Int {
         return items.size
@@ -58,7 +43,7 @@ internal class SMSListAdapter(private val context: Context, private val items: L
         var convertView = convertView
 
         if (convertView == null) {
-            val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val inflater = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             convertView = inflater.inflate(R.layout.sms_list_item, parent, false)
         }
 
@@ -68,50 +53,7 @@ internal class SMSListAdapter(private val context: Context, private val items: L
 
         val number = items[position].label
         val msgTxt = convertView.findViewById<TextView>(R.id.smsMessageTxt)
-        msgTxt.text = context.getString(R.string.to).format(number)
-
-        val statusTxt = convertView.findViewById<TextView>(R.id.smsStatusTxt)
-        val statusContainer = convertView.findViewById<RelativeLayout>(R.id.statusContainer)
-        val statusFailed = convertView.findViewById<TextView>(R.id.statusFailed)
-        val statusSent = convertView.findViewById<TextView>(R.id.statusSent)
-        val statusDelivered = convertView.findViewById<TextView>(R.id.statusDelivered)
-
-        val item = items[position]
-        val status = item.status
-
-        when (status) {
-            SMSItem.STATUS_INACTIVE -> {
-                statusTxt.visibility = View.GONE
-                statusContainer.visibility = View.GONE
-            }
-
-            SMSItem.STATUS_SENDING -> {
-                statusTxt.setTextColor(context.resources.getColor(R.color.grey))
-                statusTxt.text = context.resources.getString(R.string.status_sending)
-                statusTxt.visibility = View.VISIBLE
-                statusContainer.visibility = View.GONE
-            }
-
-            else -> {
-                val enableDeliveryReport = sp.getBoolean(context.getString(R.string.pref_enable_delivery_report_key), false)
-
-                statusTxt.visibility = View.GONE
-                statusFailed.text = context.resources.getString(R.string.status_failed)
-                        .replace("{COUNT}", item.failedInfoList.size.toString())
-                statusSent.text = context.resources.getString(R.string.status_sent)
-                        .replace("{COUNT}", item.sentInfoList.size.toString())
-
-                if (enableDeliveryReport) {
-                    statusDelivered.text = context.resources.getString(R.string.status_delivered)
-                            .replace("{COUNT}", item.receivedInfoList.size.toString())
-                    statusDelivered.visibility = View.VISIBLE
-                } else {
-                    statusDelivered.visibility = View.GONE
-                }
-
-                statusContainer.visibility = View.VISIBLE
-            }
-        }
+        msgTxt.text = parent.context.getString(R.string.to).format(number)
 
         return convertView
     }
