@@ -18,6 +18,7 @@
 package com.balicodes.quicksms.service
 
 import android.app.IntentService
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -25,13 +26,19 @@ import android.util.Log
 import com.balicodes.quicksms.Config
 import com.balicodes.quicksms.R
 import com.balicodes.quicksms.model.SMSItem
+import com.balicodes.quicksms.repository.MessageRepository
+import com.balicodes.quicksms.viewmodel.MessageViewModel
 import java.lang.Exception
 
 class SendingService : IntentService("SendingService") {
 
     private val TAG = javaClass.simpleName
+    lateinit var messageRepository: MessageRepository
 
     override fun onHandleIntent(intent: Intent) {
+
+        //messageRepository = MessageRepository(this.application)
+
         try {
             Log.d(TAG, "====> Start sending")
             val bundle: Bundle? = intent.getBundleExtra(Config.SMS_BUNDLE_EXTRA_KEY)

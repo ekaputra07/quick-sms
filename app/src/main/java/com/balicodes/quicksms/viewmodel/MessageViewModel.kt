@@ -27,6 +27,7 @@ import com.balicodes.quicksms.entity.MessageEntity
 import com.balicodes.quicksms.repository.MessageRepository
 
 class MessageViewModel(val app: Application) : AndroidViewModel(app) {
+
     private val messageRepository = MessageRepository(app)
 
     //-- Used by Messages list

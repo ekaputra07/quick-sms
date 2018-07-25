@@ -17,25 +17,30 @@
 
 package com.balicodes.quicksms
 
+import android.app.Activity
 import android.app.AlertDialog
+import android.arch.lifecycle.Lifecycle
+import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.ContentUris
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.FragmentActivity
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import com.balicodes.quicksms.repository.MessageRepository
 import com.balicodes.quicksms.service.SendingService
 import com.balicodes.quicksms.viewmodel.MessageViewModel
 
-class ShortcutHandlerActivity : AppCompatActivity() {
+class ShortcutHandlerActivity : FragmentActivity() {
 
-    private lateinit var viewModel: MessageViewModel
+    private lateinit var messageRepository: MessageRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel = ViewModelProviders.of(this).get(MessageViewModel::class.java)
+        messageRepository = MessageRepository(this.application)
 
         val uri = intent.data
         val smsID = ContentUris.parseId(uri)
@@ -43,7 +48,7 @@ class ShortcutHandlerActivity : AppCompatActivity() {
         Log.d(this.localClassName.toString(), smsID.toString())
 
         if (smsID != 0L) {
-            viewModel.getMessage(smsID).observe(this, Observer {
+            messageRepository.getMessage(smsID).observe(this, Observer {
                 val builder = AlertDialog.Builder(this)
                 builder.setTitle(R.string.confirm_sending)
 

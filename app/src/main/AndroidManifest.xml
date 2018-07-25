@@ -49,7 +49,7 @@
         <activity
             android:name=".ShortcutHandlerActivity"
             android:launchMode="singleInstance"
-            android:theme="@style/Theme.AppCompat.Translucent">
+            android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
