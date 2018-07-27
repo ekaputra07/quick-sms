@@ -39,6 +39,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import com.balicodes.quicksms.entity.MessageEntity
 import com.balicodes.quicksms.model.SMSItem
+import com.balicodes.quicksms.util.Shortcuts
 import com.balicodes.quicksms.viewmodel.MessageViewModel
 
 class SMSFormFragment : Fragment() {
@@ -49,6 +50,7 @@ class SMSFormFragment : Fragment() {
     lateinit var message: EditText
     lateinit var addShortcut: Switch
     lateinit var addRecipient: TextView
+    lateinit var shortcuts: Shortcuts;
 
     private val recipients = ArrayList<Array<String>>()
 
@@ -62,6 +64,7 @@ class SMSFormFragment : Fragment() {
 
         (activity as MainActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
+        shortcuts = Shortcuts(requireActivity())
         viewModel = ViewModelProviders.of(requireActivity()).get(MessageViewModel::class.java)
         viewModel.getSelectedMessage().observe(this, android.arch.lifecycle.Observer { setFormData(it) })
     }
@@ -114,6 +117,12 @@ class SMSFormFragment : Fragment() {
         }
 
         addShortcut = view.findViewById(R.id.addShortcut)
+        addShortcut.setOnClickListener{
+            if (!shortcuts.canCreateShortcuts(smsItem?.id) && addShortcut.isChecked) {
+                Toast.makeText(context, "Sorry! Can only enable maximum 4 shortcuts.", Toast.LENGTH_SHORT).show()
+                addShortcut.isChecked = false
+            }
+        }
 
         val saveBtn = view.findViewById<Button>(R.id.saveBtn)
         saveBtn.setOnClickListener { saveMessage() }
@@ -239,7 +248,7 @@ class SMSFormFragment : Fragment() {
 
     // After message has been saved.
     private fun afterSave(messageEntity: MessageEntity) {
-        toggleShortcut(messageEntity, messageEntity.addShortcut == SMSItem.SHORTCUT_YES)
+        shortcuts.toggleShortcut(messageEntity, messageEntity.addShortcut == SMSItem.SHORTCUT_YES)
         hideKeyboard()
 
         Toast.makeText(requireActivity(), R.string.message_saved, Toast.LENGTH_SHORT).show()
@@ -270,7 +279,7 @@ class SMSFormFragment : Fragment() {
 
     // After message deleted.
     private fun afterDelete(messageEntity: MessageEntity) {
-        toggleShortcut(messageEntity, false) // delete shortcut
+        shortcuts.toggleShortcut(messageEntity, false) // delete shortcut
 
         Toast.makeText(requireActivity(), R.string.message_deleted, Toast.LENGTH_SHORT).show()
         requireActivity().onBackPressed()
@@ -279,89 +288,6 @@ class SMSFormFragment : Fragment() {
     // used to set reference to recipient item index before contact Pick.
     fun setRecipientPickIndex(index: Int) {
         recipientPickIndex = index
-    }
-
-    // Toogle shortcut icon
-    // TODO: Move this code block into its own class.
-    private fun toggleShortcut(messageEntity: MessageEntity, create: Boolean) {
-
-        val shortCutInt = Intent(requireContext(), ShortcutHandlerActivity::class.java)
-        shortCutInt.action = Intent.ACTION_MAIN
-        shortCutInt.data = ContentUris.withAppendedId(Uri.parse(Config.SMS_DATA_BASE_URI), messageEntity.id!!)
-
-        // On Android 25+ we can create dynamic shortcuts
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            val shortcutManager = requireContext().getSystemService(ShortcutManager::class.java)
-            val shortcutId = "QSMS_".format(messageEntity.id)
-
-            val shortcutInfo = ShortcutInfo.Builder(requireActivity(), shortcutId)
-                    .setShortLabel(messageEntity.title)
-                    .setIcon(Icon.createWithResource(requireActivity(), R.drawable.ic_launcher_shortcut))
-                    .setIntent(shortCutInt)
-                    .build()
-
-            // On Android 26+ we can create pinned shortcut on home screen.
-            // else, we only create dynamic shortcut.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && shortcutManager.isRequestPinShortcutSupported) {
-                val shortcuts = shortcutManager.pinnedShortcuts
-
-                var exists = false
-                loop@ for (s in shortcuts) {
-                    if (s.id == shortcutId) {
-                        exists = true
-                        break@loop
-                    }
-                }
-                if (create && !exists) {
-                    val pinnedShortcutCallbackIntent = shortcutManager.createShortcutResultIntent(shortcutInfo)
-                    val successCallback = PendingIntent.getBroadcast(requireContext(), 0, pinnedShortcutCallbackIntent, 0)
-                    shortcutManager.requestPinShortcut(shortcutInfo, successCallback.intentSender)
-                } else if (create && exists) {
-                    shortcutManager.updateShortcuts(listOf(shortcutInfo))
-                } else {
-                    val builder = AlertDialog.Builder(requireActivity())
-                    builder.setTitle("Deleting shortcut")
-                    builder.setMessage("Unfortunately Android doesn't allow us to delete the shortcut for you, so you have to delete it manually :)")
-                    builder.setPositiveButton(R.string.yes) { _, _ -> }
-                    val dialog = builder.create()
-                    dialog.show()
-                }
-
-            } else {
-                val shortcuts = shortcutManager.dynamicShortcuts
-
-                var exists = false
-                loop@ for (s in shortcuts) {
-                    if (s.id == shortcutId) {
-                        exists = true
-                        break@loop
-                    }
-                }
-                if (create && !exists) {
-                    shortcutManager.addDynamicShortcuts(listOf(shortcutInfo))
-                } else if (create && exists) {
-                    shortcutManager.updateShortcuts(listOf(shortcutInfo))
-                } else {
-                    shortcutManager.removeDynamicShortcuts(listOf(shortcutId))
-                }
-            }
-
-        } else {
-            val addInt = Intent()
-            addInt.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortCutInt)
-            addInt.putExtra(Intent.EXTRA_SHORTCUT_NAME, messageEntity.title)
-            addInt.putExtra("duplicate", false)
-            addInt.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,
-                    Intent.ShortcutIconResource.fromContext(requireActivity().applicationContext,
-                            R.drawable.ic_launcher_shortcut))
-            if (create) {
-                addInt.action = "com.android.launcher.action.INSTALL_SHORTCUT"
-            } else {
-                addInt.action = "com.android.launcher.action.UNINSTALL_SHORTCUT"
-            }
-
-            requireContext().applicationContext.sendBroadcast(addInt)
-        }
     }
 }
 

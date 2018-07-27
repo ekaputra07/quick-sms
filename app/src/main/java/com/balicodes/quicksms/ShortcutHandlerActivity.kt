@@ -29,6 +29,7 @@ import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import com.balicodes.quicksms.entity.MessageEntity
 import com.balicodes.quicksms.repository.MessageRepository
 import com.balicodes.quicksms.service.SendingService
 import com.balicodes.quicksms.viewmodel.MessageViewModel
@@ -49,27 +50,49 @@ class ShortcutHandlerActivity : FragmentActivity() {
 
         if (smsID != 0L) {
             messageRepository.getMessage(smsID).observe(this, Observer {
-                val builder = AlertDialog.Builder(this)
-                builder.setTitle(R.string.confirm_sending)
-
-                builder.setNegativeButton(R.string.no) { _, _ -> finish() }
-                builder.setOnCancelListener { finish() }
-
-                builder.setPositiveButton(R.string.yes) { _, _ ->
-                    it?.let {
-                        // Sent via sending service
-                        val intent = Intent(this, SendingService::class.java)
-                        intent.putExtra(Config.SMS_BUNDLE_EXTRA_KEY, it.toSmsItem().toBundle())
-                        this.startService(intent)
-                    }
-                    finish()
+                if (it != null) {
+                    showConfirmSendingDialog(it)
+                } else {
+                    showNotFoundDialog()
                 }
-
-                val dialog = builder.create()
-                dialog.show()
             })
         } else {
             finish()
         }
+    }
+
+    private fun showConfirmSendingDialog(messageEntity: MessageEntity) {
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.confirm_sending)
+
+        builder.setNegativeButton(R.string.no) { _, _ -> finish() }
+        builder.setOnCancelListener { finish() }
+
+        builder.setPositiveButton(R.string.yes) { _, _ ->
+            // Sent via sending service
+            val intent = Intent(this, SendingService::class.java)
+            intent.putExtra(Config.SMS_BUNDLE_EXTRA_KEY, messageEntity.toSmsItem().toBundle())
+            this.startService(intent)
+
+            finish()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    private fun showNotFoundDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Message is not available anymore.")
+
+        builder.setOnCancelListener { finish() }
+
+        builder.setPositiveButton(R.string.ok) { _, _ ->
+            finish()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
     }
 }
