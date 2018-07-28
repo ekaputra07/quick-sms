@@ -21,13 +21,17 @@ import android.arch.persistence.db.SupportSQLiteDatabase
 import android.arch.persistence.room.Database
 import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
+import android.arch.persistence.room.TypeConverters
 import android.arch.persistence.room.migration.Migration
 import android.content.Context
 import android.support.annotation.VisibleForTesting
 import com.balicodes.quicksms.dao.MessageDao
 import com.balicodes.quicksms.entity.MessageEntity
+import com.balicodes.quicksms.entity.SendSmsEntity
+import com.balicodes.quicksms.entity.SendStatusEntity
 
-@Database(entities = [MessageEntity::class], version = 2)
+@Database(entities = [MessageEntity::class, SendSmsEntity::class, SendStatusEntity::class], version = 2)
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun messageDao(): MessageDao
@@ -49,6 +53,30 @@ abstract class AppDatabase : RoomDatabase() {
                 // from version 1 to version 2.
                 // If no migration is provided, then the tables will be dropped and recreated.
                 // Since we didn't alter the table, there's nothing else to do here.
+            }
+        }
+
+        @VisibleForTesting
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+
+            override fun migrate(database: SupportSQLiteDatabase) {
+
+                database.execSQL("CREATE TABLE IF NOT EXISTS `SendSms` ("
+                        + "`id` TEXT NOT NULL, "
+                        + "`name` TEXT NOT NULL, "
+                        + "`message` TEXT NOT NULL, "
+                        + "`num_recipients` INTEGER NOT NULL, "
+                        + "`created` INTEGER NOT NULL, PRIMARY KEY(`id`))")
+
+                database.execSQL("CREATE TABLE IF NOT EXISTS `SendStatus` ("
+                        + "`id` TEXT NOT NULL, "
+                        + "`send_id` TEXT NOT NULL, "
+                        + "`status` TEXT NOT NULL, "
+                        + "`created` INTEGER NOT NULL, "
+                        + "`updated` INTEGER NOT NULL, PRIMARY KEY(`id`), "
+                        + "FOREIGN KEY(`send_id`) REFERENCES `SendSms`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
+
+                database.execSQL("CREATE INDEX `status_send_id` ON `SendStatus` (`send_id`)")
             }
         }
 

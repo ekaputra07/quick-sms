@@ -20,25 +20,29 @@ package com.balicodes.quicksms.entity
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
-import com.balicodes.quicksms.model.SMSItem
+import java.util.*
 
-@Entity(tableName = MessageEntity.TABLE_NAME)
-class MessageEntity(@PrimaryKey(autoGenerate = true) var id: Long?,
-                    var title: String?,
-                    var number: String?,
-                    var message: String?,
-                    @ColumnInfo(name = "confirm") var addShortcut: String?) {
-
-    fun toSmsItem(): SMSItem {
-        return SMSItem(id!!, title!!, number!!, message!!, addShortcut!!)
-    }
+/*
+ Since this table will be used as sending history, we don't add reference to the MessageEntity here
+ so even if the message has been deleted, we still have some details about it.
+ */
+@Entity(tableName = SendSmsEntity.TABLE_NAME)
+class SendSmsEntity(@PrimaryKey var id: String,
+                    var name: String,
+                    var message: String,
+                    @ColumnInfo(name = "num_recipients") var numRecipients: Int,
+                    var created: Date) {
 
     companion object {
-        const val TABLE_NAME = "sms"
+        const val TABLE_NAME = "SendSms"
+
+        fun generateId(): String {
+            return "send_%s".format(UUID.randomUUID().toString())
+        }
     }
 
     override fun toString(): String {
-        return "MessageEntity: id=%s, title=%s, number=%s, message=%s, shortcut=%s"
-                .format(id, title, number, message, addShortcut)
+        return "SendSms: id=%s, name=%s, numRecipients=%s, created=%s, message=%s"
+                .format(id, name, numRecipients, created, message)
     }
 }
