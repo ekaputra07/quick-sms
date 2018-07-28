@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "87e11925931bcef8c8f5950490da7d76",
+    "identityHash": "49e6b1ecccff96a674209ec8712916c3",
     "entities": [
       {
         "tableName": "sms",
@@ -47,120 +47,11 @@
         },
         "indices": [],
         "foreignKeys": []
-      },
-      {
-        "tableName": "SendSms",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `message` TEXT NOT NULL, `num_recipients` INTEGER NOT NULL, `created` INTEGER NOT NULL, PRIMARY KEY(`id`))",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "message",
-            "columnName": "message",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "numRecipients",
-            "columnName": "num_recipients",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "created",
-            "columnName": "created",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "columnNames": [
-            "id"
-          ],
-          "autoGenerate": false
-        },
-        "indices": [],
-        "foreignKeys": []
-      },
-      {
-        "tableName": "SendStatus",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `send_id` TEXT NOT NULL, `status` TEXT NOT NULL, `created` INTEGER NOT NULL, `updated` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`send_id`) REFERENCES `SendSms`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "sendId",
-            "columnName": "send_id",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "status",
-            "columnName": "status",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "created",
-            "columnName": "created",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "updated",
-            "columnName": "updated",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "columnNames": [
-            "id"
-          ],
-          "autoGenerate": false
-        },
-        "indices": [
-          {
-            "name": "status_send_id",
-            "unique": false,
-            "columnNames": [
-              "send_id"
-            ],
-            "createSql": "CREATE  INDEX `status_send_id` ON `${TABLE_NAME}` (`send_id`)"
-          }
-        ],
-        "foreignKeys": [
-          {
-            "table": "SendSms",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "send_id"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          }
-        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"87e11925931bcef8c8f5950490da7d76\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"49e6b1ecccff96a674209ec8712916c3\")"
     ]
   }
 }

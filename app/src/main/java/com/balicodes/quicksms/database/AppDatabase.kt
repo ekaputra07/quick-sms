@@ -30,7 +30,7 @@ import com.balicodes.quicksms.entity.MessageEntity
 import com.balicodes.quicksms.entity.SendSmsEntity
 import com.balicodes.quicksms.entity.SendStatusEntity
 
-@Database(entities = [MessageEntity::class, SendSmsEntity::class, SendStatusEntity::class], version = 2)
+@Database(entities = [MessageEntity::class, SendSmsEntity::class, SendStatusEntity::class], version = 3)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
@@ -87,7 +87,7 @@ abstract class AppDatabase : RoomDatabase() {
             if (INSTANCE == null) {
                 synchronized(AppDatabase::class) {
                     INSTANCE = Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, DATABASE_NAME)
-                            .addMigrations(MIGRATION_1_2)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                             .build()
                 }
             }

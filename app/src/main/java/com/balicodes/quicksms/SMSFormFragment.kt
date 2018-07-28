@@ -163,6 +163,12 @@ class SMSFormFragment : Fragment() {
 
             recipientListAdapter!!.notifyDataSetChanged()
         }
+
+        // on new form, add one blank recipient
+        if (smsItem == null){
+            recipients.add(arrayOf("", ""))
+            recipientListAdapter!!.notifyDataSetChanged()
+        }
     }
 
     private fun hideKeyboard() {
