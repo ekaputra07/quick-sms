@@ -38,8 +38,7 @@ class AboutDialog(val context: Context) {
 
         // Update about text based on BuildConfig.
         val aboutTxt = ctx.resources.getString(R.string.about_1)
-                .replace("{APP_NAME}", ctx.resources.getString(R.string.app_name))
-                .replace("{VERSION_NAME}", ctx.resources.getString(R.string.version_name))
+                .format(ctx.resources.getString(R.string.app_name), ctx.resources.getString(R.string.version_name))
         about.text = aboutTxt
 
         val btnRate: Button = messageView.findViewById(R.id.btnRate)

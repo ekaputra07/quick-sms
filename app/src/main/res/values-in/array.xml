@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Sort orders name array -->
+    <string-array name="pref_sort_order_names_array">
+        <item>Judul</item>
+        <item>Terbaru</item>
+        <item>Terlama</item>
+    </string-array>
+</resources>

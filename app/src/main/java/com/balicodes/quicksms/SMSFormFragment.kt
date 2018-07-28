@@ -19,17 +19,10 @@ package com.balicodes.quicksms
 
 import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
-import android.app.PendingIntent
 import android.arch.lifecycle.ViewModelProviders
-import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ShortcutInfo
-import android.content.pm.ShortcutManager
 import android.database.DataSetObserver
-import android.graphics.drawable.Icon
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.support.v4.app.Fragment
@@ -111,15 +104,15 @@ class SMSFormFragment : Fragment() {
                 saveRecipientsState() // before adding new recipient, make sure we save any changes.
                 recipientListAdapter!!.addItem(arrayOf("", ""))
             } else {
-                val msg = String.format(requireActivity().resources.getString(R.string.max_recipients_warning), Config.MAX_RECIPIENTS_PER_SMS.toString())
+                val msg = String.format(requireActivity().getString(R.string.max_recipients_warning), Config.MAX_RECIPIENTS_PER_SMS.toString())
                 Toast.makeText(activity, msg, Toast.LENGTH_LONG).show()
             }
         }
 
         addShortcut = view.findViewById(R.id.addShortcut)
-        addShortcut.setOnClickListener{
+        addShortcut.setOnClickListener {
             if (!shortcuts.canCreateShortcuts(smsItem?.id) && addShortcut.isChecked) {
-                Toast.makeText(context, "Sorry! Can only enable maximum 4 shortcuts.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, requireActivity().getString(R.string.enable_shortcut_warning), Toast.LENGTH_SHORT).show()
                 addShortcut.isChecked = false
             }
         }

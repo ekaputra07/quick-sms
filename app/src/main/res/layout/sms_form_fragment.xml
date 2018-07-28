@@ -63,7 +63,7 @@
                 <Switch
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Add shortcut to home screen "
+                    android:text="@string/enable_shortcut"
                     android:id="@+id/addShortcut"
                     android:checked="false"
                     android:layout_gravity="center_horizontal"

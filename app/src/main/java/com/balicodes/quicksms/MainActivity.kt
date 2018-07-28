@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     private fun shareApp() {
         val sendIntent = Intent()
         sendIntent.action = Intent.ACTION_SEND
-        val shareTxt = getString(R.string.share_text).replace("{DOWNLOAD_LINK}", getString(R.string.download_link))
+        val shareTxt = getString(R.string.share_text).format(getString(R.string.download_link))
         sendIntent.putExtra(Intent.EXTRA_TEXT, shareTxt)
         sendIntent.type = "text/plain"
         startActivity(sendIntent)
