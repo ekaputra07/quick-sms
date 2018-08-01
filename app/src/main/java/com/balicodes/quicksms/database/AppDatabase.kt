@@ -26,6 +26,8 @@ import android.arch.persistence.room.migration.Migration
 import android.content.Context
 import android.support.annotation.VisibleForTesting
 import com.balicodes.quicksms.dao.MessageDao
+import com.balicodes.quicksms.dao.SendSmsDao
+import com.balicodes.quicksms.dao.SendStatusDao
 import com.balicodes.quicksms.entity.MessageEntity
 import com.balicodes.quicksms.entity.SendSmsEntity
 import com.balicodes.quicksms.entity.SendStatusEntity
@@ -35,6 +37,8 @@ import com.balicodes.quicksms.entity.SendStatusEntity
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun messageDao(): MessageDao
+    abstract fun sendSmsDao(): SendSmsDao
+    abstract fun sendStatusDao(): SendStatusDao
 
     companion object {
         const val DATABASE_NAME: String = "quicksms.db"

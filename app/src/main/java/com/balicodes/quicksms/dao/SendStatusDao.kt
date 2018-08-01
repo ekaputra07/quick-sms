@@ -28,7 +28,7 @@ interface SendStatusDao {
     fun loadAll(): LiveData<List<SendStatusEntity>>
 
     @Insert
-    fun insert(entity: SendStatusEntity): String
+    fun insert(entity: SendStatusEntity)
 
     @Insert
     fun insertMany(vararg entities: SendStatusEntity)

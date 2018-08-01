@@ -22,7 +22,6 @@ import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Delete
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.Query
-import com.balicodes.quicksms.entity.MessageEntity
 import com.balicodes.quicksms.entity.SendSmsEntity
 
 @Dao
@@ -32,10 +31,10 @@ interface SendSmsDao {
     fun loadAll(offset: Int): LiveData<List<SendSmsEntity>>
 
     @Query("SELECT * FROM " + SendSmsEntity.TABLE_NAME + " WHERE id = :id")
-    fun loadById(id: String): LiveData<MessageEntity>
+    fun loadById(id: String): LiveData<SendSmsEntity>
 
     @Insert
-    fun insert(entity: SendSmsEntity): String
+    fun insert(entity: SendSmsEntity)
 
     @Delete
     fun delete(entity: SendSmsEntity)
