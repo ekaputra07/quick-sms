@@ -29,6 +29,7 @@ import java.util.*
         indices = [Index("send_id", name = "status_send_id")])
 class SendStatusEntity(@PrimaryKey var id: String,
                        @ColumnInfo(name = "send_id") var sendId: String,
+                       var number: String,
                        var status: Status,
                        var created: Date,
                        var updated: Date) {

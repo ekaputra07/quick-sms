@@ -17,13 +17,8 @@
 
 package com.balicodes.quicksms.model
 
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.telephony.SmsManager
 import android.text.TextUtils
-import com.balicodes.quicksms.Config
 import com.balicodes.quicksms.entity.MessageEntity
 import java.util.*
 import java.util.logging.Logger
@@ -58,49 +53,6 @@ class SMSItem(val id: Long, val title: String, val number: String, val message: 
         return MessageEntity(id, title, number, message, shortcut)
     }
 
-    fun send(context: Context, enableDeliveryReport: Boolean?) {
-        val smsManager = SmsManager.getDefault()
-
-        LOG.info("SMSItem ====> Delivery report: " + enableDeliveryReport!!)
-
-        val recipients = parseReceiverCSV(this.number)
-
-        var requestCode = 0
-
-        for (recipient in recipients) {
-
-            // create Recipient object and later will be added to PendingIntent extra.
-            val rec = Recipient(id, recipient[0], recipient[1])
-
-            try {
-                LOG.info("SMSItem ====> Sending to " + recipient[1])
-
-                // Create sent pending Intent
-                val sentIntent = Intent(Config.SENT_STATUS_ACTION)
-                sentIntent.putExtra(Config.RECIPIENT_EXTRA_KEY, rec.toBundle())
-                val sentPI = PendingIntent.getBroadcast(context, requestCode, sentIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-
-                // Create delivery pending Intent, only if enabled
-                var deliveryPI: PendingIntent? = null
-                if (enableDeliveryReport) {
-                    val deliveryIntent = Intent(Config.DELIVERY_STATUS_ACTION)
-                    deliveryIntent.putExtra(Config.RECIPIENT_EXTRA_KEY, rec.toBundle())
-                    deliveryPI = PendingIntent.getBroadcast(context, requestCode, deliveryIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-                }
-
-                smsManager.sendTextMessage(recipient[1], null, this.message, sentPI, deliveryPI)
-            } catch (e: SecurityException) {
-                LOG.warning("SMSItem ====> [Security] Error sending to " + recipient[1])
-                LOG.warning(e.localizedMessage)
-            } catch (e: Exception) {
-                LOG.warning("SMSItem ====> Error sending to " + recipient[1])
-                e.printStackTrace()
-            }
-
-            requestCode++
-        }
-    }
-
     companion object {
         const val SHORTCUT_YES = "YES"
         const val SHORTCUT_NO = "NO"
@@ -110,7 +62,8 @@ class SMSItem(val id: Long, val title: String, val number: String, val message: 
         fun fromBundle(bundle: Bundle): SMSItem? {
             try {
                 return SMSItem(bundle.getLong("id"), bundle.getString("title"),
-                        bundle.getString("number"), bundle.getString("message"), bundle.getString("shortcut"))
+                        bundle.getString("number"), bundle.getString("message"),
+                        bundle.getString("shortcut"))
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -126,21 +79,23 @@ class SMSItem(val id: Long, val title: String, val number: String, val message: 
             // create a list of map.
             val list = ArrayList<Array<String>>()
 
-            // always return at least on empty list
-            if (numberCSV == null || numberCSV.isBlank()) {
-                list.add(arrayOf("", ""))
-                return list
-            }
+            numberCSV?.let {
+                // always return at least on empty list
+                if (it.isBlank()) {
+                    list.add(arrayOf("", ""))
+                    return list
+                }
 
-            for (contact in numberCSV.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
-                // handle legacy number format
-                if (!contact.contains(":")) {
-                    list.add(arrayOf("", contact))
-                } else {
-                    if (contact.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray().size != 2) {
-                        list.add(arrayOf("", ""))
+                for (contact in it.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
+                    // handle legacy number format
+                    if (!contact.contains(":")) {
+                        list.add(arrayOf("", contact))
                     } else {
-                        list.add(contact.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
+                        if (contact.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray().size != 2) {
+                            list.add(arrayOf("", ""))
+                        } else {
+                            list.add(contact.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
+                        }
                     }
                 }
             }

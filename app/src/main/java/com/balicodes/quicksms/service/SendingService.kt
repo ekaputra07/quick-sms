@@ -18,11 +18,14 @@
 package com.balicodes.quicksms.service
 
 import android.app.IntentService
+import android.app.PendingIntent
 import android.content.Intent
 import android.media.MediaPlayer
 import android.preference.PreferenceManager
+import android.telephony.SmsManager
 import com.balicodes.quicksms.Config
 import com.balicodes.quicksms.R
+import com.balicodes.quicksms.model.Recipient
 import com.balicodes.quicksms.model.SMSItem
 import com.balicodes.quicksms.repository.MessageRepository
 import com.balicodes.quicksms.util.Notification
@@ -60,17 +63,58 @@ class SendingService : IntentService("SendingService") {
                 val playBeep = sp.getBoolean(getString(R.string.pref_enable_beep_key), true)
                 if (playBeep) beep.start()
 
-                val item = SMSItem.fromBundle(bundle)
-                item?.send(applicationContext, enableDeliveryReport)
-                LOG.info("====> Finished sending")
-
-                // Show notification
-                Notification.show(this, 1, "Sending \"" + item?.title + "\"...", "Success 0, Failed 1 of 1 recipients", Notification.getContentIntentMain(this))
-
+                SMSItem.fromBundle(it)?.let { sendSms(it, enableDeliveryReport) }
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
+    private fun sendSms(item: SMSItem, enableDeliveryReport: Boolean) {
+
+        val smsManager = SmsManager.getDefault()
+
+        LOG.info("SMSItem ====> Delivery report: $enableDeliveryReport")
+
+        val recipients = SMSItem.parseReceiverCSV(item.number)
+
+        for ((index, recipient) in recipients.withIndex()) {
+            // create Recipient object and later will be added to PendingIntent extra.
+            val rec = Recipient(item.id, recipient[0], recipient[1])
+
+            try {
+                SMSItem.LOG.info("SMSItem ====> Sending to " + recipient[1])
+
+                // Create sent pending Intent
+                val sentIntent = Intent(Config.SENT_STATUS_ACTION)
+                sentIntent.putExtra(Config.RECIPIENT_EXTRA_KEY, rec.toBundle())
+                val sentPI = PendingIntent.getBroadcast(applicationContext, index, sentIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+                // Create delivery pending Intent, only if enabled
+                var deliveryPI: PendingIntent? = null
+                if (enableDeliveryReport) {
+                    val deliveryIntent = Intent(Config.DELIVERY_STATUS_ACTION)
+                    deliveryIntent.putExtra(Config.RECIPIENT_EXTRA_KEY, rec.toBundle())
+                    deliveryPI = PendingIntent.getBroadcast(applicationContext, index, deliveryIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+                }
+
+                smsManager.sendTextMessage(recipient[1], null, item.message, sentPI, deliveryPI)
+            } catch (e: SecurityException) {
+                SMSItem.LOG.warning("SMSItem ====> [Security] Error sending to " + recipient[1])
+                SMSItem.LOG.warning(e.localizedMessage)
+            } catch (e: Exception) {
+                SMSItem.LOG.warning("SMSItem ====> Error sending to " + recipient[1])
+                e.printStackTrace()
+            }
+
+            LOG.info("====> Finished sending")
+
+            // Show notification
+            Notification.show(this,
+                    1,
+                    "Sending \"" + item.title + "\"...",
+                    "Success 0, Failed 1 of 1 recipients",
+                    Notification.getContentIntentMain(this))
+        }
+    }
 }

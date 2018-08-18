@@ -27,7 +27,7 @@ import com.balicodes.quicksms.entity.SendSmsEntity
 @Dao
 interface SendSmsDao {
 
-    @Query("SELECT * FROM " + SendSmsEntity.TABLE_NAME + " OFFSET :offset LIMIT 20 ORDER BY created DESC")
+    @Query("SELECT * FROM " + SendSmsEntity.TABLE_NAME + " ORDER BY created DESC LIMIT 20 OFFSET :offset")
     fun loadAll(offset: Int): LiveData<List<SendSmsEntity>>
 
     @Query("SELECT * FROM " + SendSmsEntity.TABLE_NAME + " WHERE id = :id")

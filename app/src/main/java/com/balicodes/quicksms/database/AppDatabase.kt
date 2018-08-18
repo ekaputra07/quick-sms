@@ -75,6 +75,7 @@ abstract class AppDatabase : RoomDatabase() {
                 database.execSQL("CREATE TABLE IF NOT EXISTS `SendStatus` ("
                         + "`id` TEXT NOT NULL, "
                         + "`send_id` TEXT NOT NULL, "
+                        + "`number` TEXT NOT NULL, "
                         + "`status` TEXT NOT NULL, "
                         + "`created` INTEGER NOT NULL, "
                         + "`updated` INTEGER NOT NULL, PRIMARY KEY(`id`), "
