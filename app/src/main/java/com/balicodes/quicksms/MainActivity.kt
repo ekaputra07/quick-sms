@@ -25,13 +25,13 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.balicodes.quicksms.util.Notification
+import java.util.logging.Logger
 
 class MainActivity : AppCompatActivity() {
 
@@ -125,7 +125,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         if (requestCode == Config.SEND_SMS_PERMISSION_REQUEST && grantResults.isNotEmpty()) {
-            Log.d(MainActivity::class.java.name, grantResults.size.toString())
+
+            LOG.info(grantResults.size.toString())
 
             if (Build.VERSION.SDK_INT == 26) {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
@@ -141,5 +142,9 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+        private val LOG: Logger = Logger.getLogger(MainActivity::class.java.name)
     }
 }

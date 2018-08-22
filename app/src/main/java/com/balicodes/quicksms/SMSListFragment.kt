@@ -17,20 +17,15 @@
 
 package com.balicodes.quicksms
 
-import android.Manifest
 import android.app.AlertDialog
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
-import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.*
 import android.widget.AdapterView
@@ -39,8 +34,10 @@ import android.widget.ListView
 import com.balicodes.quicksms.entity.MessageEntity
 import com.balicodes.quicksms.model.SMSItem
 import com.balicodes.quicksms.service.SendingService
+import com.balicodes.quicksms.util.SmsPermissionChecker
 import com.balicodes.quicksms.viewmodel.MessageViewModel
 import java.util.*
+import java.util.logging.Logger
 
 class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
 
@@ -188,24 +185,12 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
     private fun sendSMS() {
         if (currentSMSitem == null) return
 
-        // Android API 23+ requires this
-        // There's a bug on API 26 which requires READ_PHONE_STATE to be able to send SMS.
-        if (Build.VERSION.SDK_INT == 26) {
-            val permissionSendSMS = ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.SEND_SMS)
-            val permissionReadPhoneState = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_PHONE_STATE)
+        // Check for permission to send sms.
+        if (!SmsPermissionChecker.hasPermissionToSendSms(requireContext())) {
+            LOG.warning("Permission not granted. Asking for permission...")
 
-            if (permissionSendSMS != PackageManager.PERMISSION_GRANTED || permissionReadPhoneState != PackageManager.PERMISSION_GRANTED) {
-                val perms = arrayOf(Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE)
-                ActivityCompat.requestPermissions(requireActivity(), perms, Config.SEND_SMS_PERMISSION_REQUEST)
-                return
-            }
-        } else {
-            val permission = ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.SEND_SMS)
-            if (permission != PackageManager.PERMISSION_GRANTED) {
-                val perms = arrayOf(Manifest.permission.SEND_SMS)
-                ActivityCompat.requestPermissions(requireActivity(), perms, Config.SEND_SMS_PERMISSION_REQUEST)
-                return
-            }
+            SmsPermissionChecker.requestSendSmsPermission(requireActivity())
+            return
         }
 
         // start our sending service
@@ -241,5 +226,9 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
     override fun onResume() {
         super.onResume()
         sp = PreferenceManager.getDefaultSharedPreferences(requireContext())
+    }
+
+    companion object {
+        private val LOG: Logger = Logger.getLogger(SMSListFragment::class.java.name)
     }
 }
