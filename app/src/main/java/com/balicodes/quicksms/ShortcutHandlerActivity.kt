@@ -17,26 +17,24 @@
 
 package com.balicodes.quicksms
 
-import android.app.Activity
 import android.app.AlertDialog
-import android.arch.lifecycle.Lifecycle
-import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.content.ContentUris
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
-import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import com.balicodes.quicksms.entity.MessageEntity
 import com.balicodes.quicksms.repository.MessageRepository
 import com.balicodes.quicksms.service.SendingService
-import com.balicodes.quicksms.viewmodel.MessageViewModel
+import java.util.logging.Logger
 
 class ShortcutHandlerActivity : FragmentActivity() {
 
     private lateinit var messageRepository: MessageRepository
+
+    companion object {
+        private val LOG: Logger = Logger.getLogger(ShortcutHandlerActivity::class.java.name)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,13 +44,13 @@ class ShortcutHandlerActivity : FragmentActivity() {
         val uri = intent.data
         val smsID = ContentUris.parseId(uri)
 
-        Log.d(this.localClassName.toString(), smsID.toString())
-
         if (smsID != 0L) {
             messageRepository.getMessage(smsID).observe(this, Observer {
                 if (it != null) {
+                    LOG.info("Message found on DB.")
                     showConfirmSendingDialog(it)
                 } else {
+                    LOG.warning("Message not found on DB.")
                     showNotFoundDialog()
                 }
             })
@@ -62,7 +60,6 @@ class ShortcutHandlerActivity : FragmentActivity() {
     }
 
     private fun showConfirmSendingDialog(messageEntity: MessageEntity) {
-
         val builder = AlertDialog.Builder(this)
         builder.setTitle(R.string.confirm_sending)
 
@@ -71,7 +68,7 @@ class ShortcutHandlerActivity : FragmentActivity() {
 
         builder.setPositiveButton(R.string.yes) { _, _ ->
             // Sent via sending service
-            val intent = Intent(this, SendingService::class.java)
+            val intent = Intent(applicationContext, SendingService::class.java)
             intent.putExtra(Config.SMS_BUNDLE_EXTRA_KEY, messageEntity.toSmsItem().toBundle())
             this.startService(intent)
 

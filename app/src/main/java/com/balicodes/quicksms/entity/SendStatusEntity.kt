@@ -38,12 +38,12 @@ class SendStatusEntity(@PrimaryKey var id: String,
         const val TABLE_NAME = "SendStatus"
 
         fun generateId(): String {
-            return "send_%s".format(UUID.randomUUID().toString())
+            return "status_%s".format(UUID.randomUUID().toString())
         }
     }
 
     override fun toString(): String {
-        return "SendStatusEntity: id=%s, status=%s, created=%s, updated=%s"
-                .format(id, status, created, updated)
+        return "SendStatusEntity: id=%s, sendId=%s, number=%s, status=%s, created=%s, updated=%s"
+                .format(id, sendId, number, status, created, updated)
     }
 }

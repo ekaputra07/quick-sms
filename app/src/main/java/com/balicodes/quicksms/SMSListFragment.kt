@@ -32,7 +32,11 @@ import android.widget.AdapterView
 import android.widget.FrameLayout
 import android.widget.ListView
 import com.balicodes.quicksms.entity.MessageEntity
+import com.balicodes.quicksms.entity.SendSmsEntity
+import com.balicodes.quicksms.entity.SendStatusEntity
 import com.balicodes.quicksms.model.SMSItem
+import com.balicodes.quicksms.repository.SendSmsRepository
+import com.balicodes.quicksms.repository.SendStatusRepository
 import com.balicodes.quicksms.service.SendingService
 import com.balicodes.quicksms.util.SmsPermissionChecker
 import com.balicodes.quicksms.viewmodel.MessageViewModel
@@ -81,6 +85,24 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
         })
 
         listAdapter = SMSListAdapter(listSMS)
+
+        val sendSmsRepository = SendSmsRepository(requireActivity().application)
+        val sendStatusRepository = SendStatusRepository(requireActivity().application)
+
+        LOG.info("========================== LOAD AND DELETE =================================")
+        sendSmsRepository.loadAll(0).observe(this, Observer<List<SendSmsEntity>> {
+            it?.forEach {
+                LOG.info(it.toString())
+                sendSmsRepository.delete(it, {LOG.info("deleted" + it.toString())})
+            }
+        })
+        sendStatusRepository.loadAll().observe(this, Observer<List<SendStatusEntity>> {
+            it?.forEach {
+                LOG.info(it.toString())
+                sendStatusRepository.delete(it, {LOG.info("deleted"+ it.toString())})
+            }
+        })
+        LOG.info("============================================================================")
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
