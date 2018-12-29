@@ -22,10 +22,9 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
-import com.balicodes.quicksms.model.SMSItem
 import com.balicodes.quicksms.entity.MessageEntity
+import com.balicodes.quicksms.model.SMSItem
 import com.balicodes.quicksms.repository.MessageRepository
-import com.balicodes.quicksms.repository.SendSmsRepository
 
 class MessageViewModel(val app: Application) : AndroidViewModel(app) {
 

@@ -24,12 +24,15 @@ import com.balicodes.quicksms.database.AppDatabase
 import com.balicodes.quicksms.entity.SendStatusEntity
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
+import java.util.*
 
 class SendStatusRepository(val app: Application) {
 
     private val sendStatusDao: SendStatusDao = AppDatabase.getInstance(app)!!.sendStatusDao()
 
     fun loadAll(): LiveData<List<SendStatusEntity>> = sendStatusDao.loadAll()
+
+    fun loadById(id: String) = sendStatusDao.loadById(id)
 
     fun insertMany(vararg entities: SendStatusEntity, listener: (Array<SendStatusEntity>) -> Unit) = doAsync {
         sendStatusDao.insertMany(*entities)
@@ -42,6 +45,7 @@ class SendStatusRepository(val app: Application) {
     }
 
     fun update(entity: SendStatusEntity, listener: (SendStatusEntity) -> Unit) = doAsync {
+        entity.updated = Date(System.currentTimeMillis())
         sendStatusDao.update(entity)
         uiThread { listener.invoke(entity) }
     }

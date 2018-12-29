@@ -89,6 +89,7 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
         val sendSmsRepository = SendSmsRepository(requireActivity().application)
         val sendStatusRepository = SendStatusRepository(requireActivity().application)
 
+        /*
         LOG.info("========================== LOAD AND DELETE =================================")
         sendSmsRepository.loadAll(0).observe(this, Observer<List<SendSmsEntity>> {
             it?.forEach {
@@ -103,6 +104,7 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
             }
         })
         LOG.info("============================================================================")
+        */
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {

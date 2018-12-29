@@ -25,22 +25,19 @@ import android.preference.PreferenceManager
 import android.telephony.SmsManager
 import com.balicodes.quicksms.Config
 import com.balicodes.quicksms.R
+import com.balicodes.quicksms.SMSStatusBroadcastReceiver
 import com.balicodes.quicksms.entity.SendSmsEntity
 import com.balicodes.quicksms.entity.SendStatusEntity
-import com.balicodes.quicksms.model.Recipient
 import com.balicodes.quicksms.model.SMSItem
 import com.balicodes.quicksms.model.Status
-import com.balicodes.quicksms.repository.MessageRepository
 import com.balicodes.quicksms.repository.SendSmsRepository
 import com.balicodes.quicksms.repository.SendStatusRepository
 import com.balicodes.quicksms.util.Notification
-import java.lang.Exception
 import java.util.*
 import java.util.logging.Logger
 
 class SendingService : IntentService("SendingService") {
 
-    lateinit var messageRepository: MessageRepository
     lateinit var sendSmsRepository: SendSmsRepository
     lateinit var sendStatusRepository: SendStatusRepository
     lateinit var beep: MediaPlayer
@@ -51,7 +48,6 @@ class SendingService : IntentService("SendingService") {
 
     override fun onCreate() {
         super.onCreate()
-        messageRepository = MessageRepository(application)
         sendSmsRepository = SendSmsRepository(application)
         sendStatusRepository = SendStatusRepository(application)
 
@@ -87,53 +83,65 @@ class SendingService : IntentService("SendingService") {
         LOG.info("====> Delivery report: $enableDeliveryReport")
 
         val recipients = SMSItem.parseReceiverCSV(item.number)
-
-        val sendSmsEntity = SendSmsEntity(SendSmsEntity.generateId(), item.title, item.message,
-                recipients.size, Date(System.currentTimeMillis()))
+        val sendId = SendSmsEntity.generateId()
+        val sendDate = Date(System.currentTimeMillis())
+        val sendSmsEntity = SendSmsEntity(sendId, item.title, item.message, recipients.size, sendDate)
 
         sendSmsRepository.insert(sendSmsEntity, {
 
             for ((index, recipient) in recipients.withIndex()) {
-                // create Recipient object and later will be added to PendingIntent extra.
-                val rec = Recipient(item.id, recipient[0], recipient[1])
+                val number = recipient[1]
 
                 try {
-                    // Create sent pending Intent
-                    val sentIntent = Intent(Config.SENT_STATUS_ACTION)
-                    sentIntent.putExtra(Config.RECIPIENT_EXTRA_KEY, rec.toBundle())
-                    val sentPI = PendingIntent.getBroadcast(applicationContext, index, sentIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-
-                    // Create delivery pending Intent, only if enabled
-                    var deliveryPI: PendingIntent? = null
-                    if (enableDeliveryReport) {
-                        val deliveryIntent = Intent(Config.DELIVERY_STATUS_ACTION)
-                        deliveryIntent.putExtra(Config.RECIPIENT_EXTRA_KEY, rec.toBundle())
-                        deliveryPI = PendingIntent.getBroadcast(applicationContext, index, deliveryIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-                    }
-
                     // Create send status and send the message.
+                    val sendStatusId = SendStatusEntity.generateId()
                     val now = Date(System.currentTimeMillis())
-                    val sendStatusEntity = SendStatusEntity(SendStatusEntity.generateId(), it.id, recipient[1], Status.SENDING, now, now)
-                    sendStatusRepository.insert(sendStatusEntity, {
-                        LOG.info("====> Sending to " + recipient[1])
-                        smsManager.sendTextMessage(recipient[1], null, item.message, sentPI, deliveryPI)
+                    val sendStatusEntity = SendStatusEntity(sendStatusId, it.id, number, Status.SENDING, now, now)
+                    sendStatusRepository.insert(sendStatusEntity, { entity ->
+
+                        // Create sent pending Intent
+                        // explicit intent directly targeting your class (to comply with Android O)
+                        val sentIntent = Intent(applicationContext, SMSStatusBroadcastReceiver::class.java)
+
+                        sentIntent.putExtra("action", Config.SENT_STATUS_ACTION)
+                        sentIntent.putExtra(Config.SEND_ID_EXTRA_KEY, sendId)
+                        sentIntent.putExtra(Config.SEND_STATUS_ID_EXTRA_KEY, sendStatusId)
+
+                        val sentPI = PendingIntent.getBroadcast(applicationContext, index, sentIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+                        // Create delivery pending Intent, only if enabled
+                        // explicit intent directly targeting your class (to comply with Android O)
+                        var deliveryPI: PendingIntent? = null
+                        if (enableDeliveryReport) {
+                            val deliveryIntent = Intent(applicationContext, SMSStatusBroadcastReceiver::class.java)
+
+                            deliveryIntent.putExtra("action", Config.DELIVERY_STATUS_ACTION)
+                            deliveryIntent.putExtra(Config.SEND_ID_EXTRA_KEY, sendId)
+                            deliveryIntent.putExtra(Config.SEND_STATUS_ID_EXTRA_KEY, sendStatusId)
+
+                            deliveryPI = PendingIntent.getBroadcast(applicationContext, index, deliveryIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+                        }
+
+                        LOG.info("====> Sending to " + number)
+                        smsManager.sendTextMessage(number, null, item.message, sentPI, deliveryPI)
                         LOG.info("====> Finished sending")
                     })
 
                 } catch (e: SecurityException) {
-                    LOG.warning("====> [Security] Error sending to " + recipient[1])
+                    LOG.warning("====> [Security] Error sending to $number")
                     LOG.warning(e.localizedMessage)
                 } catch (e: Exception) {
-                    LOG.warning("====> Error sending to " + recipient[1])
+                    LOG.warning("====> Error sending to $number")
                     e.printStackTrace()
                 }
             }
 
             // Show notification
+            LOG.info("====> Showing notification with id: ${sendDate.time.toInt()}")
             Notification.show(this,
-                    1,
-                    "Sending \"" + item.title + "\"...",
-                    "Success 0, Failed 1 of 1 recipients",
+                    sendDate.time.toInt(),
+                    "Sending \"${item.title}\"...",
+                    "Tap here to see the results",
                     Notification.getContentIntentMain(this))
         })
     }

@@ -59,7 +59,9 @@
 
         <service android:name=".service.SendingService" />
 
-        <receiver android:name=".SMSStatusBroadcastReceiver">
+        <receiver
+            android:name=".SMSStatusBroadcastReceiver"
+            android:enabled="true">
             <intent-filter>
                 <action android:name="com.balicodes.quicksms.SENT_STATUS"/>
                 <action android:name="com.balicodes.quicksms.DELIVERY_STATUS"/>

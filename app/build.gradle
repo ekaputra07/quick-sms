@@ -24,7 +24,7 @@ android {
     }
 
     compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    buildToolsVersion '28.0.3'
     flavorDimensions "versionCode"
 
     defaultConfig {
@@ -84,6 +84,8 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    debugImplementation 'com.amitshekhar.android:debug-db:1.0.4'
 
     // Room components (Manage DB)
     implementation "android.arch.persistence.room:runtime:$room_version"
