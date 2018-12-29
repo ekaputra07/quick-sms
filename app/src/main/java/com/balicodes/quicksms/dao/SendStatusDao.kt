@@ -27,6 +27,9 @@ interface SendStatusDao {
     @Query("SELECT * FROM " + SendStatusEntity.TABLE_NAME + " ORDER BY created ASC")
     fun loadAll(): LiveData<List<SendStatusEntity>>
 
+    @Query("SELECT * FROM " + SendStatusEntity.TABLE_NAME + " WHERE send_id = :sendId ORDER BY created ASC")
+    fun loadAllBySendId(sendId: String): LiveData<List<SendStatusEntity>>
+
     @Query("SELECT * FROM " + SendStatusEntity.TABLE_NAME + " WHERE id = :id")
     fun loadById(id: String): LiveData<SendStatusEntity>
 

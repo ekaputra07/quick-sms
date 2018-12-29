@@ -43,9 +43,16 @@ class MainActivity : AppCompatActivity() {
         Notification.createNotificationChannel(this)
 
         if (savedInstanceState == null) {
+            val sendId = intent.getStringExtra(Config.SEND_ID_EXTRA_KEY)
+
             supportFragmentManager.beginTransaction()
                     .add(R.id.container, SMSListFragment())
                     .commit()
+
+            // Opened via notification
+            if (sendId != null) {
+                showHistoryScreen(sendId)
+            }
         }
     }
 
@@ -89,10 +96,22 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    /**
+     * Open history screen
+     */
+    private fun showHistoryScreen(sendId: String?) {
+        val intent = Intent(this, HistoryActivity::class.java)
+        if (sendId != null) {
+            intent.putExtra(Config.SEND_ID_EXTRA_KEY, sendId)
+        }
+        startActivity(intent)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
 
         when (id) {
+            R.id.action_history -> showHistoryScreen(null)
             R.id.action_settings -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)

@@ -47,7 +47,7 @@ class SMSStatusBroadcastReceiver : BroadcastReceiver(), LifecycleOwner {
         sendStatusRepository = SendStatusRepository(context.applicationContext as Application)
 
         val action = intent.getStringExtra("action")
-        val sendId = intent.getStringExtra(Config.SEND_ID_EXTRA_KEY)
+        //val sendId = intent.getStringExtra(Config.SEND_ID_EXTRA_KEY)
         val sendStatusId = intent.getStringExtra(Config.SEND_STATUS_ID_EXTRA_KEY)
 
         if (resultCode == Activity.RESULT_OK) {

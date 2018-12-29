@@ -10,6 +10,7 @@
     <string name="action_rate">Rate Quick SMS</string>
     <string name="action_about">About</string>
     <string name="action_copy">Create a copy</string>
+    <string name="action_history">History</string>
     <string name="to">To : %s</string>
 
     <string name="title_hint">Title</string>
@@ -81,5 +82,6 @@
     <string name="about_2">Love this app? please rate us on Google Play, feedback and contribution are welcome.</string>
     <string name="title_activity_resend">Failed sending to these numbers</string>
     <string name="title_activity_export_import">Export / Import messages</string>
+    <string name="title_activity_history">History</string>
 
 </resources>

@@ -32,6 +32,8 @@ class SendStatusRepository(val app: Application) {
 
     fun loadAll(): LiveData<List<SendStatusEntity>> = sendStatusDao.loadAll()
 
+    fun loadAllBySendId(sendId: String) = sendStatusDao.loadAllBySendId(sendId)
+
     fun loadById(id: String) = sendStatusDao.loadById(id)
 
     fun insertMany(vararg entities: SendStatusEntity, listener: (Array<SendStatusEntity>) -> Unit) = doAsync {

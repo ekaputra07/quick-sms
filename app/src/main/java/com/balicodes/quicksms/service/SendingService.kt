@@ -142,7 +142,7 @@ class SendingService : IntentService("SendingService") {
                     sendDate.time.toInt(),
                     "Sending \"${item.title}\"...",
                     "Tap here to see the results",
-                    Notification.getContentIntentMain(this))
+                    Notification.getContentIntentMain(this, sendId))
         })
     }
 

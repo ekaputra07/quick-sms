@@ -25,6 +25,7 @@ import android.content.Intent
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
+import com.balicodes.quicksms.Config
 import com.balicodes.quicksms.MainActivity
 import com.balicodes.quicksms.R
 
@@ -33,7 +34,7 @@ class Notification {
 
     companion object {
 
-        private const val CHANNEL_ID = "com.balicodes.quicksms.notification"
+        private const val CHANNEL_ID = "com.balicodes.quicksms.notification.v1"
 
         fun createNotificationChannel(context: Context) {
             // Create the NotificationChannel, but only on API 26+ because
@@ -57,6 +58,7 @@ class Notification {
                     .setContentTitle(title)
                     .setContentText(message)
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setSound(null)
                     .setAutoCancel(true)
 
             pendingIntent?.let {
@@ -68,10 +70,11 @@ class Notification {
         }
 
         // This PendingIntent will open app main screen when notification tapped.
-        fun getContentIntentMain(context: Context): PendingIntent {
+        fun getContentIntentMain(context: Context, sendId: String): PendingIntent {
             val intent = Intent(context, MainActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            return PendingIntent.getActivity(context, 0, intent, 0)
+            intent.putExtra(Config.SEND_ID_EXTRA_KEY, sendId)
+            intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
     }
 
