@@ -26,6 +26,7 @@ import android.support.v4.app.FragmentActivity
 import com.balicodes.quicksms.entity.MessageEntity
 import com.balicodes.quicksms.repository.MessageRepository
 import com.balicodes.quicksms.service.SendingService
+import com.balicodes.quicksms.util.SmsPermissionChecker
 import java.util.logging.Logger
 
 class ShortcutHandlerActivity : FragmentActivity() {
@@ -38,6 +39,14 @@ class ShortcutHandlerActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Check for permission to send sms.
+        if (!SmsPermissionChecker.hasPermissionToSendSms(this)) {
+            LOG.warning("Permission not granted. Asking for permission...")
+
+            SmsPermissionChecker.requestSendSmsPermission(this)
+            finish()
+        }
 
         messageRepository = MessageRepository(this.application)
 

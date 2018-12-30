@@ -32,15 +32,15 @@ class SendingStatusListAdapter(val items: List<SendStatusEntity>) : BaseAdapter(
 
         if (v == null) {
             val inflater = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            v = inflater.inflate(R.layout.sms_list_item, parent, false)
+            v = inflater.inflate(R.layout.simple_list_item, parent, false)
         }
 
         val title = items[position].number
-        val titleTxt = v!!.findViewById<TextView>(R.id.smsTitleTxt)
+        val titleTxt = v!!.findViewById<TextView>(R.id.title)
         titleTxt.text = title
 
         val status = items[position].status
-        val msgTxt = v.findViewById<TextView>(R.id.smsMessageTxt)
+        val msgTxt = v.findViewById<TextView>(R.id.subtitle)
         msgTxt.text = status.name
 
         return v

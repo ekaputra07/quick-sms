@@ -219,19 +219,6 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
         requireActivity().startService(sendingIntent)
     }
 
-    private fun resendSingleRecipient() {
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle(R.string.sending_failed)
-        builder.setMessage(R.string.sending_failed_info)
-        builder.setPositiveButton(R.string.retry) { dialog, id ->
-            currentSendingCount = 0
-            sendSMS()
-        }
-        builder.setNegativeButton(R.string.ok) { dialog, id -> resetCurrentSMSItem() }
-        val dialog = builder.create()
-        dialog.show()
-    }
-
     /*----------------------------------------------------------------------------------------------
     Reset current selected SMSItem state.
     ----------------------------------------------------------------------------------------------*/
