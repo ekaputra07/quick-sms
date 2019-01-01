@@ -43,16 +43,9 @@ class MainActivity : AppCompatActivity() {
         Notification.createNotificationChannel(this)
 
         if (savedInstanceState == null) {
-            val sendId = intent.getStringExtra(Config.SEND_ID_EXTRA_KEY)
-
             supportFragmentManager.beginTransaction()
                     .add(R.id.container, SMSListFragment())
                     .commit()
-
-            // Opened via notification
-            if (sendId != null) {
-                showHistoryScreen(sendId)
-            }
         }
     }
 

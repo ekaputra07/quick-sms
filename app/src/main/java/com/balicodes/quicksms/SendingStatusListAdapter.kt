@@ -18,12 +18,14 @@
 package com.balicodes.quicksms
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import com.balicodes.quicksms.entity.SendStatusEntity
+import com.balicodes.quicksms.model.Status
 
 class SendingStatusListAdapter(val items: List<SendStatusEntity>) : BaseAdapter() {
 
@@ -41,9 +43,18 @@ class SendingStatusListAdapter(val items: List<SendStatusEntity>) : BaseAdapter(
 
         val status = items[position].status
         val msgTxt = v.findViewById<TextView>(R.id.subtitle)
-        msgTxt.text = status.name
+        msgTxt.setTextColor(getStatusColor(items[position].status))
+        msgTxt.text = status.label
 
         return v
+    }
+
+    private fun getStatusColor(status: Status): Int {
+        when (status) {
+            Status.SENT, Status.DELIVERED -> return Color.rgb(34, 139, 34)
+            Status.NOT_SENT, Status.NOT_DELIVERED -> return Color.RED
+            else -> return Color.BLACK
+        }
     }
 
     override fun getItem(position: Int) = items.get(position)

@@ -69,17 +69,6 @@
         </receiver>
 
         <activity
-            android:name=".ResendActivity"
-            android:label="@string/title_activity_resend"
-            android:parentActivityName=".MainActivity">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-
-        <activity
             android:name=".HistoryActivity"
             android:label="@string/title_activity_history"
             android:parentActivityName=".MainActivity">

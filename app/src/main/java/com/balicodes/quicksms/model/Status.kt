@@ -17,9 +17,10 @@
 
 package com.balicodes.quicksms.model
 
-enum class Status {
-    PENDING,
-    SENDING,
-    SENT,
-    DELIVERED
+enum class Status(val label: String) {
+    SENDING("SENDING"),
+    SENT("SENT"),
+    NOT_SENT("NOT SENT"),
+    DELIVERED("DELIVERED"),
+    NOT_DELIVERED("NOT DELIVERED");
 }

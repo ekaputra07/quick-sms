@@ -26,21 +26,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
 import com.balicodes.quicksms.entity.SendStatusEntity
-import com.balicodes.quicksms.viewmodel.SendingHistoryViewModel
+import com.balicodes.quicksms.viewmodel.HistoryViewModel
 import java.util.*
 
 class SendingStatusListFragment : Fragment() {
 
     private val items = ArrayList<SendStatusEntity>()
     private lateinit var listAdapter: SendingStatusListAdapter
-    private lateinit var viewModel: SendingHistoryViewModel
+    private lateinit var viewModel: HistoryViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
         listAdapter = SendingStatusListAdapter(items)
-        viewModel = ViewModelProviders.of(requireActivity()).get(SendingHistoryViewModel::class.java)
+        viewModel = ViewModelProviders.of(requireActivity()).get(HistoryViewModel::class.java)
 
         viewModel.getSelectedHistoryEntity().observe(this, android.arch.lifecycle.Observer { entity ->
             entity?.let {

@@ -20,13 +20,14 @@ package com.balicodes.quicksms.util
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import com.balicodes.quicksms.Config
-import com.balicodes.quicksms.MainActivity
+import com.balicodes.quicksms.HistoryActivity
 import com.balicodes.quicksms.R
 
 
@@ -71,10 +72,13 @@ class Notification {
 
         // This PendingIntent will open app main screen when notification tapped.
         fun getContentIntentMain(context: Context, sendId: String): PendingIntent {
-            val intent = Intent(context, MainActivity::class.java)
+            val intent = Intent(context, HistoryActivity::class.java)
             intent.putExtra(Config.SEND_ID_EXTRA_KEY, sendId)
-            intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-            return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            val taskStackBuilder = TaskStackBuilder.create(context).run {
+                addNextIntentWithParentStack(intent)
+            }
+            return taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+
         }
     }
 

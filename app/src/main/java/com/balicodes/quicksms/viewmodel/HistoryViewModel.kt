@@ -27,7 +27,7 @@ import com.balicodes.quicksms.entity.SendStatusEntity
 import com.balicodes.quicksms.repository.SendSmsRepository
 import com.balicodes.quicksms.repository.SendStatusRepository
 
-class SendingHistoryViewModel(val app: Application) : AndroidViewModel(app) {
+class HistoryViewModel(val app: Application) : AndroidViewModel(app) {
 
     private val sendSmsRepository = SendSmsRepository(app)
     private val sendStatusRepository = SendStatusRepository(app)

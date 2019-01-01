@@ -145,8 +145,4 @@ class SendingService : IntentService("SendingService") {
                     Notification.getContentIntentMain(this, sendId))
         })
     }
-
-    private fun send(sendSmsEntity: SendSmsEntity) {
-
-    }
 }

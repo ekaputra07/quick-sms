@@ -81,26 +81,6 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
         })
 
         listAdapter = SMSListAdapter(listSMS)
-
-        /*
-        LOG.info("========================== LOAD AND DELETE =================================")
-        val sendSmsRepository = SendSmsRepository(requireActivity().application)
-        val sendStatusRepository = SendStatusRepository(requireActivity().application)
-
-        sendSmsRepository.loadAll(0).observe(this, Observer<List<SendSmsEntity>> {
-            it?.forEach {
-                LOG.info(it.toString())
-                sendSmsRepository.delete(it, {LOG.info("deleted" + it.toString())})
-            }
-        })
-        sendStatusRepository.loadAll().observe(this, Observer<List<SendStatusEntity>> {
-            it?.forEach {
-                LOG.info(it.toString())
-                sendStatusRepository.delete(it, {LOG.info("deleted"+ it.toString())})
-            }
-        })
-        LOG.info("============================================================================")
-        */
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {

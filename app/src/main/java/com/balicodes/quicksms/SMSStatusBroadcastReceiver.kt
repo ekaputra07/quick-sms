@@ -63,12 +63,12 @@ class SMSStatusBroadcastReceiver : BroadcastReceiver(), LifecycleOwner {
         } else {
             if (action == Config.SENT_STATUS_ACTION) {
                 LOG.info("NOT SENT: $sendStatusId")
-                updateSendStatusById(sendStatusRepository, sendStatusId, Status.PENDING)
+                updateSendStatusById(sendStatusRepository, sendStatusId, Status.NOT_SENT)
             }
 
             if (action == Config.DELIVERY_STATUS_ACTION) {
                 LOG.info("NOT DELIVERED: $sendStatusId")
-                updateSendStatusById(sendStatusRepository, sendStatusId, Status.PENDING)
+                updateSendStatusById(sendStatusRepository, sendStatusId, Status.NOT_DELIVERED)
             }
         }
     }

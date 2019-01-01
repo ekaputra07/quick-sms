@@ -22,27 +22,26 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ListView
 import com.balicodes.quicksms.entity.SendSmsEntity
-import com.balicodes.quicksms.viewmodel.SendingHistoryViewModel
+import com.balicodes.quicksms.viewmodel.HistoryViewModel
 import java.util.*
 
 class SendingHistoryListFragment : Fragment(), AdapterView.OnItemClickListener {
 
     private val items = ArrayList<SendSmsEntity>()
     private lateinit var listAdapter: SendingHistoryListAdapter
-    private lateinit var viewModel: SendingHistoryViewModel
+    private lateinit var viewModel: HistoryViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
         listAdapter = SendingHistoryListAdapter(items)
-        viewModel = ViewModelProviders.of(requireActivity()).get(SendingHistoryViewModel::class.java)
+        viewModel = ViewModelProviders.of(requireActivity()).get(HistoryViewModel::class.java)
         viewModel.getHistoryList().observe(this, android.arch.lifecycle.Observer { list ->
             list?.let {
                 items.clear()

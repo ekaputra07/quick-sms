@@ -20,15 +20,20 @@ package com.balicodes.quicksms
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.balicodes.quicksms.viewmodel.SendingHistoryViewModel
+import com.balicodes.quicksms.viewmodel.HistoryViewModel
+import java.util.logging.Logger
 
 class HistoryActivity : AppCompatActivity() {
+
+    companion object {
+        private val LOG = Logger.getLogger(HistoryActivity::class.java.name)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_history)
 
-        val viewModel = ViewModelProviders.of(this).get(SendingHistoryViewModel::class.java)
+        val viewModel = ViewModelProviders.of(this).get(HistoryViewModel::class.java)
 
         if (savedInstanceState == null) {
 
