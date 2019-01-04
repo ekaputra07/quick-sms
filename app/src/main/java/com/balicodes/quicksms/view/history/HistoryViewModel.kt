@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.balicodes.quicksms.viewmodel
+package com.balicodes.quicksms.view.history
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel

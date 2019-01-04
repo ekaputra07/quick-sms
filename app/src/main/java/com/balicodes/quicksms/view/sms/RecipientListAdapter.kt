@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.balicodes.quicksms
+package com.balicodes.quicksms.view.sms
 
 import android.content.Context
 import android.content.Intent
@@ -27,6 +27,8 @@ import android.widget.BaseAdapter
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
+import com.balicodes.quicksms.Config
+import com.balicodes.quicksms.R
 
 internal class RecipientListAdapter(private val fragment: SMSFormFragment, private val items: MutableList<Array<String>>) : BaseAdapter() {
 

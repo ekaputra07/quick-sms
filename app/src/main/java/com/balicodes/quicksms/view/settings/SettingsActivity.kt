@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.balicodes.quicksms
+package com.balicodes.quicksms.view.settings
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import com.balicodes.quicksms.R
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

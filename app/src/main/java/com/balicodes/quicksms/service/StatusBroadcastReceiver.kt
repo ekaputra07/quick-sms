@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.balicodes.quicksms
+package com.balicodes.quicksms.service
 
 import android.app.Activity
 import android.app.Application
@@ -26,18 +26,19 @@ import android.arch.lifecycle.Observer
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.balicodes.quicksms.Config
 import com.balicodes.quicksms.entity.SendStatusEntity
 import com.balicodes.quicksms.model.Status
 import com.balicodes.quicksms.repository.SendStatusRepository
 import java.util.logging.Logger
 
-class SMSStatusBroadcastReceiver : BroadcastReceiver(), LifecycleOwner {
+class StatusBroadcastReceiver : BroadcastReceiver(), LifecycleOwner {
 
     lateinit var sendStatusRepository: SendStatusRepository
     lateinit var lifecycleRegistry: LifecycleRegistry
 
     companion object {
-        val LOG: Logger = Logger.getLogger(SMSStatusBroadcastReceiver::class.java.name)
+        val LOG: Logger = Logger.getLogger(StatusBroadcastReceiver::class.java.name)
     }
 
     override fun onReceive(context: Context, intent: Intent) {

@@ -25,7 +25,6 @@ import android.preference.PreferenceManager
 import android.telephony.SmsManager
 import com.balicodes.quicksms.Config
 import com.balicodes.quicksms.R
-import com.balicodes.quicksms.SMSStatusBroadcastReceiver
 import com.balicodes.quicksms.entity.SendSmsEntity
 import com.balicodes.quicksms.entity.SendStatusEntity
 import com.balicodes.quicksms.model.SMSItem
@@ -101,7 +100,7 @@ class SendingService : IntentService("SendingService") {
 
                         // Create sent pending Intent
                         // explicit intent directly targeting your class (to comply with Android O)
-                        val sentIntent = Intent(applicationContext, SMSStatusBroadcastReceiver::class.java)
+                        val sentIntent = Intent(applicationContext, StatusBroadcastReceiver::class.java)
 
                         sentIntent.putExtra("action", Config.SENT_STATUS_ACTION)
                         sentIntent.putExtra(Config.SEND_ID_EXTRA_KEY, sendId)
@@ -113,7 +112,7 @@ class SendingService : IntentService("SendingService") {
                         // explicit intent directly targeting your class (to comply with Android O)
                         var deliveryPI: PendingIntent? = null
                         if (enableDeliveryReport) {
-                            val deliveryIntent = Intent(applicationContext, SMSStatusBroadcastReceiver::class.java)
+                            val deliveryIntent = Intent(applicationContext, StatusBroadcastReceiver::class.java)
 
                             deliveryIntent.putExtra("action", Config.DELIVERY_STATUS_ACTION)
                             deliveryIntent.putExtra(Config.SEND_ID_EXTRA_KEY, sendId)

@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.balicodes.quicksms
+package com.balicodes.quicksms.view.settings
 
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceFragment
 import android.util.Log
+import com.balicodes.quicksms.R
 
 class SettingsFragment : PreferenceFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
     private lateinit var sp: SharedPreferences

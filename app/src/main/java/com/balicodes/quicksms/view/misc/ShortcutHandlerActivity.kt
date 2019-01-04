@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.balicodes.quicksms
+package com.balicodes.quicksms.view.misc
 
 import android.app.AlertDialog
 import android.arch.lifecycle.Observer
@@ -23,6 +23,8 @@ import android.content.ContentUris
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
+import com.balicodes.quicksms.Config
+import com.balicodes.quicksms.R
 import com.balicodes.quicksms.entity.MessageEntity
 import com.balicodes.quicksms.repository.MessageRepository
 import com.balicodes.quicksms.service.SendingService

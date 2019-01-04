@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.balicodes.quicksms
+package com.balicodes.quicksms.view.sms
 
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -30,7 +30,13 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import com.balicodes.quicksms.Config
+import com.balicodes.quicksms.R
 import com.balicodes.quicksms.util.Notification
+import com.balicodes.quicksms.view.history.HistoryActivity
+import com.balicodes.quicksms.view.misc.AboutDialog
+import com.balicodes.quicksms.view.misc.ExportImportActivity
+import com.balicodes.quicksms.view.settings.SettingsActivity
 import java.util.logging.Logger
 
 class MainActivity : AppCompatActivity() {

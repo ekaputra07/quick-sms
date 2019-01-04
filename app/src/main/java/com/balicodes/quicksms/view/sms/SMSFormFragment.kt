@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.balicodes.quicksms
+package com.balicodes.quicksms.view.sms
 
 import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
@@ -30,10 +30,10 @@ import android.text.TextUtils
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import com.balicodes.quicksms.*
 import com.balicodes.quicksms.entity.MessageEntity
 import com.balicodes.quicksms.model.SMSItem
 import com.balicodes.quicksms.util.Shortcuts
-import com.balicodes.quicksms.viewmodel.MessageViewModel
 
 class SMSFormFragment : Fragment() {
 

@@ -26,10 +26,9 @@ import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
-import android.widget.Toast
 import com.balicodes.quicksms.Config
 import com.balicodes.quicksms.R
-import com.balicodes.quicksms.ShortcutHandlerActivity
+import com.balicodes.quicksms.view.misc.ShortcutHandlerActivity
 import com.balicodes.quicksms.entity.MessageEntity
 import java.util.logging.Logger
 

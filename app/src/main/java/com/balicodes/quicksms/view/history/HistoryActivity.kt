@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.balicodes.quicksms
+package com.balicodes.quicksms.view.history
 
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.balicodes.quicksms.viewmodel.HistoryViewModel
+import com.balicodes.quicksms.Config
+import com.balicodes.quicksms.R
 import java.util.logging.Logger
 
 class HistoryActivity : AppCompatActivity() {

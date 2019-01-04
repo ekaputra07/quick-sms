@@ -27,7 +27,7 @@ import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import com.balicodes.quicksms.Config
-import com.balicodes.quicksms.HistoryActivity
+import com.balicodes.quicksms.view.history.HistoryActivity
 import com.balicodes.quicksms.R
 
 

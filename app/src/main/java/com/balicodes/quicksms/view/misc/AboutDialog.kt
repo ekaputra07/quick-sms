@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.balicodes.quicksms
+package com.balicodes.quicksms.view.misc
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -23,6 +23,7 @@ import android.content.Context
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import com.balicodes.quicksms.R
 
 class AboutDialog(val context: Context) {
     private val builder: AlertDialog.Builder = AlertDialog.Builder(context)

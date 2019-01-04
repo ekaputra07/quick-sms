@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.balicodes.quicksms
+package com.balicodes.quicksms.view.misc
 
 import android.app.Activity
 import android.arch.lifecycle.Observer
@@ -30,10 +30,12 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
+import com.balicodes.quicksms.Config
+import com.balicodes.quicksms.R
 import com.balicodes.quicksms.entity.MessageEntity
 import com.balicodes.quicksms.model.SMSItem
 import com.balicodes.quicksms.util.CSVReader
-import com.balicodes.quicksms.viewmodel.MessageViewModel
+import com.balicodes.quicksms.view.sms.MessageViewModel
 import kotlinx.android.synthetic.main.activity_export_import.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread

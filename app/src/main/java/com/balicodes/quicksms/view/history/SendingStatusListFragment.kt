@@ -15,34 +15,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.balicodes.quicksms
+package com.balicodes.quicksms.view.history
 
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentTransaction
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ListView
-import com.balicodes.quicksms.entity.SendSmsEntity
-import com.balicodes.quicksms.viewmodel.HistoryViewModel
+import com.balicodes.quicksms.R
+import com.balicodes.quicksms.entity.SendStatusEntity
 import java.util.*
 
-class SendingHistoryListFragment : Fragment(), AdapterView.OnItemClickListener {
+class SendingStatusListFragment : Fragment() {
 
-    private val items = ArrayList<SendSmsEntity>()
-    private lateinit var listAdapter: SendingHistoryListAdapter
+    private val items = ArrayList<SendStatusEntity>()
+    private lateinit var listAdapter: SendingStatusListAdapter
     private lateinit var viewModel: HistoryViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
-        listAdapter = SendingHistoryListAdapter(items)
+        listAdapter = SendingStatusListAdapter(items)
         viewModel = ViewModelProviders.of(requireActivity()).get(HistoryViewModel::class.java)
-        viewModel.getHistoryList().observe(this, android.arch.lifecycle.Observer { list ->
+
+        viewModel.getSelectedHistoryEntity().observe(this, android.arch.lifecycle.Observer { entity ->
+            entity?.let {
+                requireActivity().title = it.name
+            }
+        })
+        viewModel.getSendingStatusList().observe(this, android.arch.lifecycle.Observer { list ->
             list?.let {
                 items.clear()
                 items.addAll(it)
@@ -53,23 +58,22 @@ class SendingHistoryListFragment : Fragment(), AdapterView.OnItemClickListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view = inflater.inflate(R.layout.simple_list_fragment, container, false)
-        requireActivity().title = getString(R.string.title_activity_history)
 
         val listView = view.findViewById<ListView>(R.id.listView)
         listView.adapter = listAdapter
-        listView.onItemClickListener = this
         return view
     }
 
-    override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-        val item = items.get(position)
-        viewModel.setSelectedSendHistory(item.id)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
 
-        requireActivity().supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.container, SendingStatusListFragment())
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .addToBackStack(null)
-                .commit();
+        when (id) {
+            android.R.id.home -> {
+                viewModel.resetSelectedSendHistory()
+                requireActivity().onBackPressed()
+                return true // we need this, otherwise back button will close the activity.
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
