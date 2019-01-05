@@ -27,9 +27,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.balicodes.quicksms.Config
-import com.balicodes.quicksms.entity.SendStatusEntity
-import com.balicodes.quicksms.model.Status
-import com.balicodes.quicksms.repository.SendStatusRepository
+import com.balicodes.quicksms.data.entity.SendStatusEntity
+import com.balicodes.quicksms.data.model.Status
+import com.balicodes.quicksms.data.repository.SendStatusRepository
 import java.util.logging.Logger
 
 class StatusBroadcastReceiver : BroadcastReceiver(), LifecycleOwner {
@@ -48,7 +48,6 @@ class StatusBroadcastReceiver : BroadcastReceiver(), LifecycleOwner {
         sendStatusRepository = SendStatusRepository(context.applicationContext as Application)
 
         val action = intent.getStringExtra("action")
-        //val sendId = intent.getStringExtra(Config.SEND_ID_EXTRA_KEY)
         val sendStatusId = intent.getStringExtra(Config.SEND_STATUS_ID_EXTRA_KEY)
 
         if (resultCode == Activity.RESULT_OK) {
@@ -75,11 +74,11 @@ class StatusBroadcastReceiver : BroadcastReceiver(), LifecycleOwner {
     }
 
     private fun updateSendStatusById(repository: SendStatusRepository, id: String, status: Status) {
-        sendStatusRepository.loadById(id).observe(this, Observer { entity ->
+        repository.loadByIdAsync(id).observe(this, Observer { entity ->
             entity?.let {
                 if (it.status != status) {
                     it.status = status
-                    repository.update(it, this::afterSendStatusUpdated);
+                    repository.updateAsync(it, this::afterSendStatusUpdated);
                 }
             }
         })

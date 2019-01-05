@@ -28,8 +28,8 @@ import android.net.Uri
 import android.os.Build
 import com.balicodes.quicksms.Config
 import com.balicodes.quicksms.R
-import com.balicodes.quicksms.view.misc.ShortcutHandlerActivity
-import com.balicodes.quicksms.entity.MessageEntity
+import com.balicodes.quicksms.ui.misc.ShortcutHandlerActivity
+import com.balicodes.quicksms.data.entity.MessageEntity
 import java.util.logging.Logger
 
 class Shortcuts(val context: Context) {

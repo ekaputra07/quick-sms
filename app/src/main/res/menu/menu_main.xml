@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" tools:context=".view.sms.MainActivity">
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".ui.sms.MainActivity">
 
     <item android:id="@+id/action_history" android:title="@string/action_history"
         android:orderInCategory="100" app:showAsAction="never"/>

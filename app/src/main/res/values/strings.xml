@@ -18,6 +18,7 @@
     <string name="save">SAVE MESSAGE</string>
     <string name="max_recipients_warning">Maximum %s recipients per SMS</string>
     <string name="resend">Resend</string>
+    <string name="sending">Sending...</string>
 
     <string name="confirm_delete_title">Delete this message?</string>
     <string name="confirm_sending">Send the message?</string>

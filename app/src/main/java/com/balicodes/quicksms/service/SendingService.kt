@@ -25,12 +25,12 @@ import android.preference.PreferenceManager
 import android.telephony.SmsManager
 import com.balicodes.quicksms.Config
 import com.balicodes.quicksms.R
-import com.balicodes.quicksms.entity.SendSmsEntity
-import com.balicodes.quicksms.entity.SendStatusEntity
-import com.balicodes.quicksms.model.SMSItem
-import com.balicodes.quicksms.model.Status
-import com.balicodes.quicksms.repository.SendSmsRepository
-import com.balicodes.quicksms.repository.SendStatusRepository
+import com.balicodes.quicksms.data.entity.SendSmsEntity
+import com.balicodes.quicksms.data.entity.SendStatusEntity
+import com.balicodes.quicksms.data.model.SMSItem
+import com.balicodes.quicksms.data.model.Status
+import com.balicodes.quicksms.data.repository.SendSmsRepository
+import com.balicodes.quicksms.data.repository.SendStatusRepository
 import com.balicodes.quicksms.util.Notification
 import java.util.*
 import java.util.logging.Logger
@@ -96,7 +96,7 @@ class SendingService : IntentService("SendingService") {
                     val sendStatusId = SendStatusEntity.generateId()
                     val now = Date(System.currentTimeMillis())
                     val sendStatusEntity = SendStatusEntity(sendStatusId, it.id, number, Status.SENDING, now, now)
-                    sendStatusRepository.insert(sendStatusEntity, { entity ->
+                    sendStatusRepository.insertAsync(sendStatusEntity, { entity ->
 
                         // Create sent pending Intent
                         // explicit intent directly targeting your class (to comply with Android O)
@@ -139,7 +139,7 @@ class SendingService : IntentService("SendingService") {
             LOG.info("====> Showing notification with id: ${sendDate.time.toInt()}")
             Notification.show(this,
                     sendDate.time.toInt(),
-                    "Sending \"${item.title}\"...",
+                    "Sending \"${item.title}\" to ${recipients.size} recipient(s)",
                     "Tap here to see the results",
                     Notification.getContentIntentMain(this, sendId))
         })
