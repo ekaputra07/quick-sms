@@ -3,8 +3,8 @@
     package="com.balicodes.quicksms">
 
     <uses-permission android:name="android.permission.SEND_SMS" />
-    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
-    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT"/>
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -22,12 +22,12 @@
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:fullBackupContent="@xml/backup_descriptor">
+        android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.sms.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,20 +36,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".ui.settings.SettingsActivity"
             android:label="@string/pref_activity_title"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".ui.sms.MainActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".ui.sms.MainActivity" />
         </activity>
 
         <activity
-            android:name=".ShortcutHandlerActivity"
+            android:name=".ui.misc.ShortcutHandlerActivity"
             android:launchMode="singleInstance"
-            android:theme="@android:style/Theme.NoDisplay">
+            android:theme="@style/Theme.AppCompat.Translucent">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -57,35 +57,38 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".SendingService" />
+        <service android:name=".service.SendingService" />
+        <service android:name=".service.SendingServiceSingle" />
 
-        <!--<receiver android:name=".SMSStatusBroadcastReceiver">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="com.balicodes.quicksms.SENT_STATUS"/>-->
-        <!--<action android:name="com.balicodes.quicksms.DELIVERY_STATUS"/>-->
-        <!--</intent-filter>-->
-        <!--</receiver>-->
+        <receiver
+            android:name=".service.StatusBroadcastReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="com.balicodes.quicksms.SENT_STATUS"/>
+                <action android:name="com.balicodes.quicksms.DELIVERY_STATUS"/>
+            </intent-filter>
+        </receiver>
 
         <activity
-            android:name=".ResendActivity"
-            android:label="@string/title_activity_resend"
-            android:parentActivityName=".MainActivity">
+            android:name=".ui.history.HistoryActivity"
+            android:label="@string/title_activity_history"
+            android:parentActivityName=".ui.sms.MainActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".ui.sms.MainActivity" />
         </activity>
 
         <activity
-            android:name=".ExportImportActivity"
+            android:name=".ui.misc.ExportImportActivity"
             android:label="@string/title_activity_export_import"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".ui.sms.MainActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".ui.sms.MainActivity" />
         </activity>
     </application>
 

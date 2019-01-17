@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="notification_channel_name" translatable="false">Quick SMS</string>
+    <string name="notification_channel_description" translatable="false">Quick SMS Notification Channel</string>
+
     <string name="action_settings">Settings</string>
     <string name="action_new">New</string>
     <string name="action_delete">Delete</string>
@@ -7,12 +10,15 @@
     <string name="action_rate">Rate Quick SMS</string>
     <string name="action_about">About</string>
     <string name="action_copy">Create a copy</string>
-    <string name="to">To :</string>
+    <string name="action_history">History</string>
+    <string name="to">To : %s</string>
 
     <string name="title_hint">Title</string>
     <string name="message_hint">Message</string>
     <string name="save">SAVE MESSAGE</string>
     <string name="max_recipients_warning">Maximum %s recipients per SMS</string>
+    <string name="resend">Resend</string>
+    <string name="sending">Sending...</string>
 
     <string name="confirm_delete_title">Delete this message?</string>
     <string name="confirm_sending">Send the message?</string>
@@ -29,8 +35,8 @@
     <string name="status_delivered">{COUNT} delivered</string>
     <string name="status_failed">{COUNT} failed</string>
 
-    <string name="export_desc">Messages will be exported into your `Download` directory as a CSV file.</string>
-    <string name="import_desc">All imported messages is simply treated as new messages. Please make sure the file has correct CSV format (value separated by `|`).</string>
+    <string name="export_desc">Messages will be exported into your Download directory as a CSV file.</string>
+    <string name="import_desc">All imported messages is simply treated as new messages.</string>
     <string name="export">Export</string>
     <string name="exporting">Exporting…</string>
     <string name="import_str">Import</string>
@@ -39,7 +45,7 @@
     <string name="import_error_format">Error importing file, please make sure the file has correct format.</string>
     <string name="import_success">Messages imported successfully.</string>
     <string name="export_error">Export failed!</string>
-    <string name="export_success">Messages exported successfully. Please check your `Download` directory</string>
+    <string name="export_success">Messages exported successfully. Please check your Download directory</string>
     <string name="permission_sms_granted">Thank you! now you can start sending SMS.</string>
     <string name="permission_sms_denied">Sorry, this app can not send SMS without permission granted by you.</string>
     <string name="permission_export_denied">Sorry, this app can not export messages without permission to write a file into your phone storage.</string>
@@ -52,6 +58,8 @@
     <string name="message_copied">Message copied</string>
     <string name="tap_info">Tap and hold the message to send</string>
     <string name="add_recipient">+ ADD MORE RECIPIENT</string>
+    <string name="enable_shortcut">Enable shortcut</string>
+    <string name="enable_shortcut_warning">Sorry! Can only enable maximum 4 shortcuts.</string>
 
     <string name="pref_activity_title">Settings</string>
     <string name="pref_enable_beep_key" translatable="false">enable_beep</string>
@@ -61,7 +69,7 @@
     <string name="pref_sort_by_key" translatable="false">sort_by_key</string>
     <string name="pref_sort_by_title">Messages ordering</string>
     <string name="pref_sort_by_summary">Alphabetically</string>
-    <string name="pref_sort_by_default_value" translatable="false">ORDER BY title</string>
+    <string name="pref_sort_by_default_value" translatable="false">title</string>
 
     <string name="pref_sending_confirmation_key" translatable="false">sending_confirmation</string>
     <string name="pref_sending_confirmation_title">Sending confirmation</string>
@@ -71,10 +79,11 @@
     <string name="pref_enable_delivery_report_title">Enable SMS delivery report</string>
     <string name="pref_enable_delivery_report_summary">Caution! Some provider will charge you additional cost for SMS delivery report</string>
 
-    <string name="share_text">Create and send SMS template with Quick SMS. {DOWNLOAD_LINK}</string>
-    <string name="about_1">{APP_NAME} Version {VERSION_NAME}.\n\nThis app is now an open source project.\nSource code: https://github.com/ekaputra07/quick-sms</string>
+    <string name="share_text">Create and send SMS template with Quick SMS. %s</string>
+    <string name="about_1">%s Version %s.\n\nThis app is now an open source project.\nSource code: https://github.com/ekaputra07/quick-sms</string>
     <string name="about_2">Love this app? please rate us on Google Play, feedback and contribution are welcome.</string>
     <string name="title_activity_resend">Failed sending to these numbers</string>
     <string name="title_activity_export_import">Export / Import messages</string>
+    <string name="title_activity_history">History</string>
 
 </resources>
