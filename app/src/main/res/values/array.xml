@@ -9,8 +9,8 @@
 
     <!-- Sort order values array -->
     <string-array name="pref_sort_order_values_array">
-        <item>ORDER BY title</item>
-        <item>ORDER BY id DESC</item>
-        <item>ORDER BY id ASC</item>
+        <item>title</item>
+        <item>id_desc</item>
+        <item>id</item>
     </string-array>
 </resources>

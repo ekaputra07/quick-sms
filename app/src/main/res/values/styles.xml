@@ -15,4 +15,12 @@
         <item name="background">@drawable/actionbar_bg</item>
 
     </style>
+
+    <style name="Theme.AppCompat.Translucent" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
 </resources>

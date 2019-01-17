@@ -25,7 +25,7 @@
         <ListPreference
             android:key="@string/pref_sort_by_key"
             android:title="@string/pref_sort_by_title"
-            android:dialogTitle="Sort order"
+            android:dialogTitle="@string/pref_sort_by_title"
             android:entries="@array/pref_sort_order_names_array"
             android:entryValues="@array/pref_sort_order_values_array"
             android:summary="@string/pref_sort_by_summary"

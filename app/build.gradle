@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 // keystore.properties file, in the rootProject folder (should be ommited from version control).
 def keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -12,6 +13,7 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
+
     signingConfigs {
         Live {
             keyAlias keystoreProperties['keyAlias']
@@ -20,17 +22,32 @@ android {
             storePassword keystoreProperties['storePassword']
         }
     }
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+
+    compileSdkVersion 27
+    buildToolsVersion '28.0.3'
     flavorDimensions "versionCode"
+
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 26
-        versionName "1.2.1"
-        versionCode 6
+        minSdkVersion 16
+        targetSdkVersion 27
+        versionName "1.3.0"
+        versionCode 7
         resValue "string", "version_name", versionName
         resValue "string", "download_link", "http://goo.gl/KjtDj4"
+
+        // used by Room, to test migrations
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+
+        // used by Room, to test migrations
+        sourceSets {
+            androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
+        }
     }
+
     productFlavors {
         dev {
             applicationId "com.balicodes.quicksms.dev"
@@ -42,16 +59,19 @@ android {
             signingConfig signingConfigs.Live
         }
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     android.applicationVariants.all { variant ->
         variant.mergeResources.doLast {
         }
     }
+
     lintOptions {
         checkReleaseBuilds false
         // Or, if you prefer, you can continue to check for errors in release builds,
@@ -61,10 +81,24 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    debugImplementation 'com.amitshekhar.android:debug-db:1.0.4'
+
+    // Room components (Manage DB)
+    implementation "android.arch.persistence.room:runtime:$room_version"
+    kapt "android.arch.persistence.room:compiler:$room_version"
+    testImplementation "android.arch.persistence.room:testing:$room_version"
+
+    // Lifecycle components (Live Data)
+    implementation "android.arch.lifecycle:extensions:$archLifecycleVersion"
+    kapt "android.arch.lifecycle:compiler:$archLifecycleVersion"
+
+    implementation "org.jetbrains.anko:anko-commons:0.10.4"
 }
+
 repositories {
     mavenCentral()
 }
