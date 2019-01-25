@@ -129,12 +129,17 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
         viewModel.selectMessage(item.toEntity())
 
         val form = SMSFormFragment()
-        requireActivity().supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.container, form)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .addToBackStack(null)
-                .commit()
+
+        try {
+            requireActivity().supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.container, form)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .addToBackStack(null)
+                    .commit()
+        } catch (e: RuntimeException) {
+            e.printStackTrace()
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
