@@ -33,6 +33,6 @@ class Config {
         const val SMS_MESSAGE_EXTRA_KEY = "com.balicodes.quicksms.SMS_MESSAGE"
         const val SEND_ID_EXTRA_KEY = "com.balicodes.quicksms.SEND_ID"
         const val SEND_STATUS_ID_EXTRA_KEY = "com.balicodes.quicksms.SEND_STATUS_ID"
-
+        const val CREATE_SENDING_NOTIFICATION = "com.balicodes.quicksms.CREATE_SENDING_NOTIFICATION"
     }
 }

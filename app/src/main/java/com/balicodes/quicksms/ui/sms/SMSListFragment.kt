@@ -31,6 +31,7 @@ import android.view.*
 import android.widget.AdapterView
 import android.widget.FrameLayout
 import android.widget.ListView
+import android.widget.Toast
 import com.balicodes.quicksms.Config
 import com.balicodes.quicksms.R
 import com.balicodes.quicksms.data.entity.MessageEntity
@@ -39,6 +40,7 @@ import com.balicodes.quicksms.service.SendingService
 import com.balicodes.quicksms.util.SmsPermissionChecker
 import java.util.*
 import java.util.logging.Logger
+
 
 class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
 
@@ -202,6 +204,7 @@ class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
         // start our sending service
         val sendingIntent = Intent(requireContext(), SendingService::class.java)
         sendingIntent.putExtra(Config.SMS_BUNDLE_EXTRA_KEY, currentSMSitem!!.toBundle())
+        sendingIntent.putExtra(Config.CREATE_SENDING_NOTIFICATION, false)
         requireActivity().startService(sendingIntent)
     }
 
