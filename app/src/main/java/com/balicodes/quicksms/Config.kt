@@ -28,11 +28,7 @@ class Config {
         const val SENT_STATUS_ACTION = "com.balicodes.quicksms.SENT_STATUS"
         const val DELIVERY_STATUS_ACTION = "com.balicodes.quicksms.DELIVERY_STATUS"
         const val SMS_BUNDLE_EXTRA_KEY = "com.balicodes.quicksms.SMS_BUNDLE"
-        const val RECIPIENT_EXTRA_KEY = "com.balicodes.quicksms.SMS_RECIPIENT"
-        const val RECIPIENT_PARCELS_EXTRA_KEY = "com.balicodes.quicksms.RECIPIENT_PARCEL"
-        const val SMS_MESSAGE_EXTRA_KEY = "com.balicodes.quicksms.SMS_MESSAGE"
         const val SEND_ID_EXTRA_KEY = "com.balicodes.quicksms.SEND_ID"
         const val SEND_STATUS_ID_EXTRA_KEY = "com.balicodes.quicksms.SEND_STATUS_ID"
-
     }
 }

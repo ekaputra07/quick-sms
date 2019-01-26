@@ -40,6 +40,7 @@ import com.balicodes.quicksms.util.SmsPermissionChecker
 import java.util.*
 import java.util.logging.Logger
 
+
 class SMSListFragment : Fragment(), AdapterView.OnItemClickListener {
 
     private val TAG = SMSListFragment::class.java.toString()

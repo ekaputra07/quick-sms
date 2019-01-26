@@ -23,6 +23,7 @@ import android.content.Intent
 import android.media.MediaPlayer
 import android.preference.PreferenceManager
 import android.telephony.SmsManager
+import android.widget.Toast
 import com.balicodes.quicksms.Config
 import com.balicodes.quicksms.R
 import com.balicodes.quicksms.data.entity.SendSmsEntity
@@ -31,7 +32,6 @@ import com.balicodes.quicksms.data.model.SMSItem
 import com.balicodes.quicksms.data.model.Status
 import com.balicodes.quicksms.data.repository.SendSmsRepository
 import com.balicodes.quicksms.data.repository.SendStatusRepository
-import com.balicodes.quicksms.util.Notification
 import java.util.*
 import java.util.logging.Logger
 
@@ -103,6 +103,8 @@ class SendingService : IntentService("SendingService") {
                         val sentIntent = Intent(applicationContext, StatusBroadcastReceiver::class.java)
 
                         sentIntent.putExtra("action", Config.SENT_STATUS_ACTION)
+                        sentIntent.putExtra("notification_id", sendDate.time.toInt())
+                        sentIntent.putExtra("recipient_count", recipients.size)
                         sentIntent.putExtra(Config.SEND_ID_EXTRA_KEY, sendId)
                         sentIntent.putExtra(Config.SEND_STATUS_ID_EXTRA_KEY, sendStatusId)
 
@@ -115,6 +117,8 @@ class SendingService : IntentService("SendingService") {
                             val deliveryIntent = Intent(applicationContext, StatusBroadcastReceiver::class.java)
 
                             deliveryIntent.putExtra("action", Config.DELIVERY_STATUS_ACTION)
+                            sentIntent.putExtra("notification_id", sendDate.time.toInt())
+                            sentIntent.putExtra("recipient_count", recipients.size)
                             deliveryIntent.putExtra(Config.SEND_ID_EXTRA_KEY, sendId)
                             deliveryIntent.putExtra(Config.SEND_STATUS_ID_EXTRA_KEY, sendStatusId)
 
@@ -123,7 +127,6 @@ class SendingService : IntentService("SendingService") {
 
                         LOG.info("====> Sending to " + number)
                         smsManager.sendTextMessage(number, null, item.message, sentPI, deliveryPI)
-                        LOG.info("====> Finished sending")
                     })
 
                 } catch (e: SecurityException) {
@@ -135,13 +138,7 @@ class SendingService : IntentService("SendingService") {
                 }
             }
 
-            // Show notification
-            LOG.info("====> Showing notification with id: ${sendDate.time.toInt()}")
-            Notification.show(this,
-                    sendDate.time.toInt(),
-                    "Sending \"${item.title}\" to ${recipients.size} recipient(s)",
-                    "Tap here to see the results",
-                    Notification.getContentIntentMain(this, sendId))
+            Toast.makeText(this, "Your message is being sent", Toast.LENGTH_LONG).show()
         })
     }
 }

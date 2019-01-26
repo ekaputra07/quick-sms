@@ -30,6 +30,7 @@ import com.balicodes.quicksms.Config
 import com.balicodes.quicksms.data.entity.SendStatusEntity
 import com.balicodes.quicksms.data.model.Status
 import com.balicodes.quicksms.data.repository.SendStatusRepository
+import com.balicodes.quicksms.util.Notification
 import java.util.logging.Logger
 
 class StatusBroadcastReceiver : BroadcastReceiver(), LifecycleOwner {
@@ -48,7 +49,10 @@ class StatusBroadcastReceiver : BroadcastReceiver(), LifecycleOwner {
         sendStatusRepository = SendStatusRepository(context.applicationContext as Application)
 
         val action = intent.getStringExtra("action")
+        val notificationId = intent.getIntExtra("notification_id", 0)
+        val recipientCount = intent.getIntExtra("recipient_count", 0)
         val sendStatusId = intent.getStringExtra(Config.SEND_STATUS_ID_EXTRA_KEY)
+        val sendId = intent.getStringExtra(Config.SEND_ID_EXTRA_KEY)
 
         if (resultCode == Activity.RESULT_OK) {
             if (action == Config.SENT_STATUS_ACTION) {
@@ -64,6 +68,19 @@ class StatusBroadcastReceiver : BroadcastReceiver(), LifecycleOwner {
             if (action == Config.SENT_STATUS_ACTION) {
                 LOG.info("NOT SENT: $sendStatusId")
                 updateSendStatusById(sendStatusRepository, sendStatusId, Status.NOT_SENT)
+
+                if (notificationId != 0) {
+                    val notificationMsg = if (recipientCount == 1) {
+                        "Oops! Failed to send SMS"
+                    } else {
+                        "Oops! Failed to send SMS to one or more recipient"
+                    }
+                    Notification.show(context,
+                            notificationId,
+                            notificationMsg,
+                            "Tap here for more detail",
+                            Notification.getContentIntentMain(context, notificationId, sendId))
+                }
             }
 
             if (action == Config.DELIVERY_STATUS_ACTION) {
