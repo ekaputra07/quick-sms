@@ -28,7 +28,7 @@ android {
     flavorDimensions "versionCode"
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 15
         targetSdkVersion 27
         versionName "1.3.2"
         versionCode 9
