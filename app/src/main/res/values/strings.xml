@@ -18,7 +18,7 @@
     <string name="save">SAVE MESSAGE</string>
     <string name="max_recipients_warning">Maximum %s recipients per SMS</string>
     <string name="resend">Resend</string>
-    <string name="sending">Sending...</string>
+    <string name="sending">Sending…</string>
 
     <string name="confirm_delete_title">Delete this message?</string>
     <string name="confirm_sending">Send the message?</string>
@@ -59,7 +59,8 @@
     <string name="tap_info">Tap and hold the message to send</string>
     <string name="add_recipient">+ ADD MORE RECIPIENT</string>
     <string name="enable_shortcut">Enable shortcut</string>
-    <string name="enable_shortcut_warning">Sorry! Can only enable maximum 4 shortcuts.</string>
+    <string name="unsaved_shortcut_warning">Cannot create shortcut for unsaved message</string>
+    <string name="enable_shortcut_warning">Sorry! Can only enable maximum 4 shortcuts</string>
 
     <string name="pref_activity_title">Settings</string>
     <string name="pref_enable_beep_key" translatable="false">enable_beep</string>

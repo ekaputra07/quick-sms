@@ -30,7 +30,8 @@ import android.text.TextUtils
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import com.balicodes.quicksms.*
+import com.balicodes.quicksms.Config
+import com.balicodes.quicksms.R
 import com.balicodes.quicksms.data.entity.MessageEntity
 import com.balicodes.quicksms.data.model.SMSItem
 import com.balicodes.quicksms.util.Shortcuts
@@ -109,13 +110,20 @@ class SMSFormFragment : Fragment() {
             }
         }
 
+        // only allow check if smsItem is not null
         addShortcut = view.findViewById(R.id.addShortcut)
         addShortcut.setOnClickListener {
-            if (!shortcuts.canCreateShortcuts(smsItem?.id) && addShortcut.isChecked) {
-                Toast.makeText(context, requireActivity().getString(R.string.enable_shortcut_warning), Toast.LENGTH_SHORT).show()
+            if (smsItem == null) {
                 addShortcut.isChecked = false
+                Toast.makeText(context, requireActivity().getString(R.string.unsaved_shortcut_warning), Toast.LENGTH_SHORT).show()
+            } else {
+                if (!shortcuts.canCreateShortcuts(smsItem?.id) && addShortcut.isChecked) {
+                    Toast.makeText(context, requireActivity().getString(R.string.enable_shortcut_warning), Toast.LENGTH_SHORT).show()
+                    addShortcut.isChecked = false
+                }
             }
         }
+
 
         val saveBtn = view.findViewById<Button>(R.id.saveBtn)
         saveBtn.setOnClickListener { saveMessage() }
@@ -165,7 +173,7 @@ class SMSFormFragment : Fragment() {
         }
 
         // on new form, add one blank recipient
-        if (smsItem == null){
+        if (smsItem == null) {
             recipients.add(arrayOf("", ""))
             recipientListAdapter!!.notifyDataSetChanged()
         }
