@@ -25,6 +25,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.app.AppCompatDelegate
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -32,17 +33,22 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.balicodes.quicksms.Config
 import com.balicodes.quicksms.R
-import com.balicodes.quicksms.util.Notification
 import com.balicodes.quicksms.ui.history.HistoryActivity
 import com.balicodes.quicksms.ui.misc.AboutDialog
 import com.balicodes.quicksms.ui.misc.ExportImportActivity
 import com.balicodes.quicksms.ui.settings.SettingsActivity
+import com.balicodes.quicksms.util.Notification
 import java.util.logging.Logger
 
 class MainActivity : AppCompatActivity() {
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Add support for vector icons.
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+
         setContentView(R.layout.activity_main)
 
         // create notification channel
