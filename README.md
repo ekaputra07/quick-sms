@@ -10,6 +10,8 @@ Android app to create and send predefined SMS messages easily.
 ## Get it on Google Play!
 [https://play.google.com/store/apps/details?id=com.balicodes.quicksms](https://play.google.com/store/apps/details?id=com.balicodes.quicksms&utm_source=GitHub)
 
+As per March 2019 this app not available anymore on Google Play, if you want it you need to download it directly from here [https://github.com/ekaputra07/quick-sms/releases](https://github.com/ekaputra07/quick-sms/releases)
+
 ## Icon
 
 App icon by [Md Masud Rana](https://github.com/maaudrana)
